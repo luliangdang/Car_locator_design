@@ -1,0 +1,6 @@
+Added Component: Designator=J4(Pin HDR1X4/2.54mm-S)
+Added Pin To Net: NetName=VCC3.3 Pin=J4-1
+Added Pin To Net: NetName=GND Pin=J4-2
+Added Pin To Net: NetName=SWDIO Pin=J4-3
+Added Pin To Net: NetName=SWCLK Pin=J4-4
+Added Member To Class: ClassName=³µÔØ¶¨Î»Æ÷ Member=Component J4 Pin HDR1X4
