@@ -1,0 +1,22 @@
+Change Component Designator: OldDesignator=C8 NewDesignator=C9
+Change Component Designator: OldDesignator=C9 NewDesignator=C10
+Change Component Designator: OldDesignator=C10 NewDesignator=C11
+Change Component Designator: OldDesignator=C11 NewDesignator=C12
+Change Component Designator: OldDesignator=C12 NewDesignator=C13
+Change Component Designator: OldDesignator=C13 NewDesignator=C14
+Change Component Designator: OldDesignator=C14 NewDesignator=C15
+Change Component Designator: OldDesignator=C15 NewDesignator=C16
+Change Component Designator: OldDesignator=C16 NewDesignator=C17
+Change Component Designator: OldDesignator=C17 NewDesignator=C18
+Change Component Designator: OldDesignator=C18 NewDesignator=C19
+Change Component Designator: OldDesignator=C19 NewDesignator=C20
+Change Component Designator: OldDesignator=C20 NewDesignator=C21
+Change Component Designator: OldDesignator=C21 NewDesignator=C22
+Change Component Designator: OldDesignator=C22 NewDesignator=C23
+Added Component: Designator=C8(LC-0805_C)
+Added Pin To Net: NetName=GND Pin=C8-1
+Added Pin To Net: NetName=VDDA Pin=C8-2
+Added Member To Class: ClassName=车载定位器 Member=Component C1 105
+Added Member To Class: ClassName=车载定位器 Member=Component C2 105
+Added Member To Class: ClassName=车载定位器 Member=Component C3 105
+Added Member To Class: ClassName=车载定位器 Member=Component C23 22pF

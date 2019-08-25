@@ -1,0 +1,26 @@
+Change Component Designator: OldDesignator=R2 NewDesignator=R5
+Change Component Designator: OldDesignator=R3 NewDesignator=R6
+Change Component Designator: OldDesignator=R4 NewDesignator=R7
+Change Component Designator: OldDesignator=R5 NewDesignator=R8
+Change Component Designator: OldDesignator=R6 NewDesignator=R9
+Change Component Designator: OldDesignator=R7 NewDesignator=R10
+Change Component Designator: OldDesignator=R8 NewDesignator=R11
+Change Component Designator: OldDesignator=R9 NewDesignator=R12
+Change Component Designator: OldDesignator=R10 NewDesignator=R13
+Change Component Designator: OldDesignator=R11 NewDesignator=R14
+Change Component Designator: OldDesignator=R12 NewDesignator=R15
+Change Component Designator: OldDesignator=RFID1 NewDesignator=RFID
+Change Component Designator: OldDesignator=SD_CARD1 NewDesignator=SD_CARD
+Added Component: Designator=R2(LC-0805_R)
+Added Component: Designator=R3(LC-0805_R)
+Added Component: Designator=R4(LC-0805_R)
+Added Pin To Net: NetName=KEY1 Pin=R2-1
+Added Pin To Net: NetName=VCC3.3 Pin=R2-2
+Added Pin To Net: NetName=KEY2 Pin=R3-1
+Added Pin To Net: NetName=VCC3.3 Pin=R3-2
+Added Pin To Net: NetName=KEY3 Pin=R4-1
+Added Pin To Net: NetName=VCC3.3 Pin=R4-2
+Change Net Name : Old Net Name=NetR10_2 New Net Name=NetR13_2
+Added Member To Class: ClassName=车载定位器 Member=Component R13 10KΩ
+Added Member To Class: ClassName=车载定位器 Member=Component R14 10KΩ
+Added Member To Class: ClassName=车载定位器 Member=Component R15 1MΩ
