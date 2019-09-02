@@ -10,8 +10,6 @@
 *.idb
 *.ilk
 *.old
-build
-Debug
 documentation/html
 *~
 *.o
@@ -34,7 +32,5 @@ GTAGS
 .vscode
 JLinkLog.txt
 JLinkSettings.ini
-RTE/
-settings/
 *.uvguix*
 cconfig.h
