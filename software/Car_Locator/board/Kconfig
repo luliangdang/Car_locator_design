@@ -82,6 +82,15 @@ menu "On-chip Peripheral Drivers"
                 bool "Enable UART1 RX DMA"
                 depends on BSP_USING_UART1 && RT_SERIAL_USING_DMA
                 default n
+			
+			config BSP_USING_UART2
+				bool "Enable UART2"
+				default n
+			
+			config BSP_UART2_RX_USING_DMA
+				bool "Enable UART2 RX DMA"
+                depends on BSP_USING_UART2 && RT_SERIAL_USING_DMA
+                default n
 
             config BSP_USING_UART3
                 bool "Enable UART3"
@@ -225,7 +234,44 @@ menu "On-chip Peripheral Drivers"
 endmenu
 
 menu "Board extended module Drivers"
-
+	menuconfig BSP_USING_A9G
+		bool "Enable A9G Device"
+		default n
+		select AT_DEVICE_USING_A9G
+		if BSP_USING_A9G
+		
+			config AT_DEVICE_A9G_INIT_ASYN
+			bool "Enable initialize by thread"
+			default n
+			
+			config AT_DEVICE_SOCKETS_NUM
+			int "AT device maximum socket client number"
+			default 8
+			
+			config AT_DEVICE_NAME
+			string "AT client device name"
+			default "uart3"
+			
+			config AT_DEVICE_RECV_BUFF_LEN
+			int "The maximum length of receive line buffer"
+			default 512
+			range 128 1024
+			
+			config AT_USING_GPS
+			bool "Enable GPS"
+			default n
+			if AT_USING_GPS
+				config GPS_UART_NAME
+				string "GPS device name"
+				default "uart2"
+				
+				config GPS_DEVICE_RECV_BUFF_LEN
+				int "The maximum length of receive line buffer"
+				default 512
+				range 128 1024
+			endif
+		endif
+	
 endmenu
 
 endmenu
