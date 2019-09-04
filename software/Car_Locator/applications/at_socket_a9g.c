@@ -172,7 +172,7 @@ __retry:
         switch (type)
         {
         case AT_SOCKET_TCP:
-            /* send AT commands(eg: AT+QIOPEN=0,"TCP","x.x.x.x", 1234) to connect TCP server */
+            /* send AT commands(eg: AT+CIPSTART=0,"TCP","x.x.x.x", 1234) to connect TCP server */
             if (at_exec_cmd(resp, "AT+CIPSTART=%d,\"TCP\",\"%s\",%d", socket, ip, port) < 0)
             {
                 result = -RT_ERROR;
@@ -386,14 +386,14 @@ static int a9g_domain_resolve(const char *name, char ip[16])
     {
         int err_code = 0;
 
-        if (at_exec_cmd(resp, "AT+CIFSR=\"%s\"", name) < 0)
+        if (at_exec_cmd(resp, "AT+CDNSGIP=\"%s\"", name) < 0)
         {
             result = -RT_ERROR;
             goto __exit;
         }
 
         /* domain name prase error options */
-        if (at_resp_parse_line_args_by_kw(resp, "+CIFSR: 0", "+CIFSR: 0,%d", &err_code) > 0)
+        if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP: 0", "+CDNSGIP: 0,%d", &err_code) > 0)
         {
             /* 3 - network error, 8 - dns common error */
             if (err_code == 3 || err_code == 8)
@@ -404,7 +404,7 @@ static int a9g_domain_resolve(const char *name, char ip[16])
         }
 
         /* parse the third line of response data, get the IP address */
-        if (at_resp_parse_line_args_by_kw(resp, "+CIFSR:", "%*[^,],%*[^,],\"%[^\"]", recv_ip) < 0)
+        if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP:", "%*[^,],%*[^,],\"%[^\"]", recv_ip) < 0)
         {
             rt_thread_mdelay(100);
             /* resolve failed, maybe receive an URC CRLF */
@@ -588,13 +588,20 @@ static const struct at_urc urc_table[] = {
 static int a9g_netdev_set_info(struct netdev *netdev);
 static int a9g_netdev_check_link_status(struct netdev *netdev); 
 
+static int a9g_reset(void)
+{
+		rt_err_t result = RT_EOK;
+		at_response_t resp = RT_NULL;
+		at_exec_cmd(at_resp_set_info(resp, 128, 0, rt_tick_from_millisecond(300)), "AT+RST=1");
+}
+		
 /* init for a9g *///需要修改
 static void a9g_init_thread_entry(void *parameter)
 {
+#define AT_RETRY											 10
 #define CPIN_RETRY                     10
 #define CSQ_RETRY                      10
 #define CREG_RETRY                     10
-#define CGREG_RETRY                    20
 
     at_response_t resp = RT_NULL;
     int i, qimux;
@@ -617,12 +624,24 @@ static void a9g_init_thread_entry(void *parameter)
             goto __exit;
         }
         LOG_D("Start initializing the A9G module");
-        /* wait SIM800C startup finish */
+        /* wait A9G startup finish */
         if (at_client_wait_connect(A9G_WAIT_CONNECT_TIME))
         {
             result = -RT_ETIMEOUT;
             goto __exit;
         }
+				
+				for(i = 0; i < AT_RETRY; i++)
+				{
+						AT_SEND_CMD(resp, 0 , 300, "AT")
+						if(at_resp_get_line_by_kw(resp, "OK"))
+						{
+								LOG_D("A9G automatically initialized successfully");
+								break;
+						}
+						rt_thread_mdelay(1000);
+				}
+				
         /* disable echo */
         AT_SEND_CMD(resp, 0, 300, "ATE0");
         /* get module version */
@@ -635,10 +654,10 @@ static void a9g_init_thread_entry(void *parameter)
         /* check SIM card */
         for (i = 0; i < CPIN_RETRY; i++)
         {
-						/* */
-            at_exec_cmd(at_resp_set_info(resp, 128, 2, 5 * RT_TICK_PER_SECOND), "AT+CPIN?");
+						/* 查看SIM卡的状态 */
+            at_exec_cmd(at_resp_set_info(resp, 128, 2, 5 * RT_TICK_PER_SECOND), "AT+CCID");
 
-            if (at_resp_get_line_by_kw(resp, "READY"))
+            if (at_resp_get_line_by_kw(resp, "+CCID"))
             {
                 LOG_D("SIM card detection success");
                 break;
@@ -654,12 +673,15 @@ static void a9g_init_thread_entry(void *parameter)
         /* waiting for dirty data to be digested */
         rt_thread_mdelay(10);
 
+				AT_SEND_CMD(resp, 0, 300, "AT+CREG=1");
+				
         /* check the GSM network is registered */
         for (i = 0; i < CREG_RETRY; i++)
         {
-            AT_SEND_CMD(resp, 0, 300, "AT+CREG?");
+            AT_SEND_CMD(resp, 0, 300, "AT+CREG=?");
             at_resp_parse_line_args_by_kw(resp, "+CREG:", "+CREG: %s", &parsed_data);
-            if (!strncmp(parsed_data, "0,1", sizeof(parsed_data)) || !strncmp(parsed_data, "0,5", sizeof(parsed_data)))
+						rt_kprintf("%s\n",resp);
+            if (!strncmp(parsed_data, "(0,1,2)", sizeof(parsed_data)) || !strncmp(parsed_data, "(0,5,2)", sizeof(parsed_data)))
             {
                 LOG_D("GSM network is registered (%s)", parsed_data);
                 break;
@@ -672,31 +694,13 @@ static void a9g_init_thread_entry(void *parameter)
             result = -RT_ERROR;
             goto __exit;
         }
-        /* check the GPRS network is registered */
-        for (i = 0; i < CGREG_RETRY; i++)
-        {
-            AT_SEND_CMD(resp, 0, 300, "AT+CGREG?");
-            at_resp_parse_line_args_by_kw(resp, "+CGREG:", "+CGREG: %s", &parsed_data);
-            if (!strncmp(parsed_data, "0,1", sizeof(parsed_data)) || !strncmp(parsed_data, "0,5", sizeof(parsed_data)))
-            {
-                LOG_D("GPRS network is registered (%s)", parsed_data);
-                break;
-            }
-            rt_thread_mdelay(1000);
-        }
-        if (i == CGREG_RETRY)
-        {
-            LOG_E("The GPRS network is register failed (%s)", parsed_data);
-            result = -RT_ERROR;
-            goto __exit;
-        }
 
         /* check signal strength */
         for (i = 0; i < CSQ_RETRY; i++)
         {
             AT_SEND_CMD(resp, 0, 300, "AT+CSQ");
             at_resp_parse_line_args_by_kw(resp, "+CSQ:", "+CSQ: %s", &parsed_data);
-            if (strncmp(parsed_data, "99,99", sizeof(parsed_data)))
+            if (strncmp(parsed_data, ",99", sizeof(parsed_data)))
             {
                 LOG_D("Signal strength: %s", parsed_data);
                 break;
@@ -711,8 +715,20 @@ static void a9g_init_thread_entry(void *parameter)
         }
 
         /* the device default response timeout is 40 seconds, but it set to 15 seconds is convenient to use. */
-        AT_SEND_CMD(resp, 2, 20 * 1000, "AT+CIPSHUT");
-
+//        AT_SEND_CMD(resp, 2, 20 * 1000, "AT+CIPSHUT");
+				
+				/* Set GPRS attachment */
+				AT_SEND_CMD(resp, 2, 300, "AT+CGATT=1");
+				rt_thread_mdelay(10);
+				
+				/* Define the PDP context */
+				AT_SEND_CMD(resp, 2, 300, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
+				rt_thread_mdelay(10);
+				
+				/* Set PDP context activation */
+				AT_SEND_CMD(resp, 2, 300, "AT+CGACT=1,1");
+				rt_thread_mdelay(10);
+				
         /* Set to multiple connections */
         AT_SEND_CMD(resp, 0, 300, "AT+CIPMUX?");
         at_resp_parse_line_args_by_kw(resp, "+CIPMUX:", "+CIPMUX: %d", &qimux);
@@ -720,32 +736,8 @@ static void a9g_init_thread_entry(void *parameter)
         {
             AT_SEND_CMD(resp, 0, 300, "AT+CIPMUX=1");
         }
-
-//        AT_SEND_CMD(resp, 0, 300, "AT+COPS?");
-//        at_resp_parse_line_args_by_kw(resp, "+COPS:", "+COPS: %*[^\"]\"%[^\"]", &parsed_data);
-//        if (strcmp(parsed_data, "CHINA MOBILE") == 0)
-//        {
-//            /* "CMCC" */
-//            LOG_I("%s", parsed_data);
-//            AT_SEND_CMD(resp, 0, 300, CSTT_CHINA_MOBILE);
-//        }
-//        else if (strcmp(parsed_data, "CHN-UNICOM") == 0)
-//        {
-//            /* "UNICOM" */
-//            LOG_I("%s", parsed_data);
-//            AT_SEND_CMD(resp, 0, 300, CSTT_CHINA_UNICOM);
-//        }
-//        else if (strcmp(parsed_data, "CHN-CT") == 0)
-//        {
-//            AT_SEND_CMD(resp, 0, 300, CSTT_CHINA_TELECOM);
-//            /* "CT" */
-//            LOG_I("%s", parsed_data);
-//        }
-
-        /* the device default response timeout is 150 seconds, but it set to 20 seconds is convenient to use. */
-        AT_SEND_CMD(resp, 0, 20 * 1000, "AT+CIICR");
 				
-				/* get the local address *///需要修改
+				/* get the local address */
         AT_SEND_CMD(resp, 2, 300, "AT+CIFSR");
         if(at_resp_get_line_by_kw(resp, "ERROR") != RT_NULL)
         {
@@ -769,7 +761,7 @@ static void a9g_init_thread_entry(void *parameter)
         else
         {
             LOG_E("AT network initialize failed (%d)!", result);
-//            sim800c_power_off();		//重启设备
+						a9g_reset();
         }
         
         rt_thread_mdelay(1000);
@@ -780,10 +772,10 @@ static void a9g_init_thread_entry(void *parameter)
     a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
 }
 
-
+/* /* init for A9G */
 int a9g_net_init(void)
 {
-#ifdef PKG_AT_INIT_BY_THREAD
+#ifdef AT_DEVICE_A9G_INIT_ASYN
     rt_thread_t tid;
 
     tid = rt_thread_create("a9g_net_init", a9g_init_thread_entry, RT_NULL, A9G_THREAD_STACK_SIZE, A9G_THREAD_PRIORITY, 20);
@@ -816,7 +808,7 @@ static const struct at_device_ops a9g_socket_ops = {
 };
 
 
-/* set sim800c network interface device status and address information */
+/* set a9g network interface device status and address information */
 static int a9g_netdev_set_info(struct netdev *netdev)
 {
 #define A9G_IEMI_RESP_SIZE      32
@@ -917,36 +909,36 @@ static int a9g_netdev_set_info(struct netdev *netdev)
     }
 
     /* set network interface device dns server */
-    {
-        #define DNS_ADDR_SIZE_MAX   16
-        char dns_server1[DNS_ADDR_SIZE_MAX] = {0}, dns_server2[DNS_ADDR_SIZE_MAX] = {0};
+//    {
+//        #define DNS_ADDR_SIZE_MAX   16
+//        char dns_server1[DNS_ADDR_SIZE_MAX] = {0}, dns_server2[DNS_ADDR_SIZE_MAX] = {0};
 
-        at_resp_set_info(resp, A9G_DNS_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
+//        at_resp_set_info(resp, A9G_DNS_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
 
-        /* send "AT+CDNSCFG?" commond to get DNS servers address */
-        if (at_exec_cmd(resp, "AT+CDNSCFG?") < 0)
-        {
-            result = -RT_ERROR;
-            goto __exit;
-        }
+//        /* send "AT+CDNSGIP?" commond to get DNS servers address */
+//        if (at_exec_cmd(resp, "AT+CDNSGIP?") < 0)
+//        {
+//            result = -RT_ERROR;
+//            goto __exit;
+//        }
 
-        if (at_resp_parse_line_args_by_kw(resp, "PrimaryDns:", "PrimaryDns:%s", dns_server1) <= 0 ||
-                at_resp_parse_line_args_by_kw(resp, "SecondaryDns:", "SecondaryDns:%s", dns_server2) <= 0)
-        {
-            LOG_E("Prase \"AT+CDNSCFG?\" commands resposne data error!");
-            result = -RT_ERROR;
-            goto __exit;
-        }
+//        if (at_resp_parse_line_args_by_kw(resp, "PrimaryDns:", "PrimaryDns:%s", dns_server1) <= 0 ||
+//                at_resp_parse_line_args_by_kw(resp, "SecondaryDns:", "SecondaryDns:%s", dns_server2) <= 0)
+//        {
+//            LOG_E("Prase \"AT+CDNSGIP?\" commands resposne data error!");
+//            result = -RT_ERROR;
+//            goto __exit;
+//        }
 
-        LOG_D("A9G primary DNS server address: %s", dns_server1);
-        LOG_D("A9G secondary DNS server address: %s", dns_server2);
+//        LOG_D("A9G primary DNS server address: %s", dns_server1);
+//        LOG_D("A9G secondary DNS server address: %s", dns_server2);
 
-        inet_aton(dns_server1, &addr);
-        netdev_low_level_set_dns_server(netdev, 0, &addr);
+//        inet_aton(dns_server1, &addr);
+//        netdev_low_level_set_dns_server(netdev, 0, &addr);
 
-        inet_aton(dns_server2, &addr);
-        netdev_low_level_set_dns_server(netdev, 1, &addr);
-    }
+//        inet_aton(dns_server2, &addr);
+//        netdev_low_level_set_dns_server(netdev, 1, &addr);
+//    }
 
 __exit:
     if (resp)
@@ -962,7 +954,7 @@ __exit:
 static void check_link_status_entry(void *parameter)
 {
 #define A9G_LINK_STATUS_OK   1
-#define A9G_LINK_RESP_SIZE   64
+#define A9G_LINK_RESP_SIZE   128
 #define A9G_LINK_RESP_TIMO   (3 * RT_TICK_PER_SECOND)
 #define A9G_LINK_DELAY_TIME  (30 * RT_TICK_PER_SECOND)
 
@@ -1068,8 +1060,8 @@ static int a9g_netdev_set_dns_server(struct netdev *netdev, uint8_t dns_num, ip_
         goto __exit;
     }
 
-    /* send "AT+CDNSCFG=<pri_dns>[,<sec_dns>]" commond to set dns servers */
-    if (at_exec_cmd(resp, "AT+CDNSCFG=\"%s\"", inet_ntoa(*dns_server)) < 0)
+    /* send "AT+CDNSGIP=<pri_dns>[,<sec_dns>]" commond to set dns servers */
+    if (at_exec_cmd(resp, "AT+CDNSGIP=\"%s\"", inet_ntoa(*dns_server)) < 0)
     {
         result = -RT_ERROR;
         goto __exit;
@@ -1242,12 +1234,12 @@ static int at_socket_device_init(void)
         return -RT_ENOMEM;
     }
 
-    /* initialize sim800c network */
+    /* initialize a9g network */
 //    rt_pin_mode(AT_DEVICE_POWER_PIN, PIN_MODE_OUTPUT);
 //    rt_pin_mode(AT_DEVICE_STATUS_PIN, PIN_MODE_INPUT);
     a9g_net_init();
 
-    /* set sim800c AT Socket options */
+    /* set a9g AT Socket options */
     at_socket_device_register(&a9g_socket_ops);
 
     return RT_EOK;
