@@ -240,7 +240,7 @@
 
 #define BSP_USING_A9G
 #define AT_DEVICE_A9G_INIT_ASYN
-#define AT_USING_GPS
+#define AT_USING_A9G_GPS
 #define GPS_UART_NAME "uart2"
 #define GPS_DEVICE_RECV_BUFF_LEN 512
 

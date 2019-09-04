@@ -257,10 +257,13 @@ menu "Board extended module Drivers"
 			default 512
 			range 128 1024
 			
-			config AT_USING_GPS
-			bool "Enable GPS"
+			config AT_USING_A9G_GPS
+			bool "Enable A9G GPS"
+			select BSP_USING_UART
+			select BSP_USING_UART2
+			select BSP_UART2_RX_USING_DMA
 			default n
-			if AT_USING_GPS
+			if AT_USING_A9G_GPS
 				config GPS_UART_NAME
 				string "GPS device name"
 				default "uart2"
@@ -271,7 +274,6 @@ menu "Board extended module Drivers"
 				range 128 1024
 			endif
 		endif
-	
 endmenu
 
 endmenu

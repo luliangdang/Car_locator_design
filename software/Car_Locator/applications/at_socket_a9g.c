@@ -43,12 +43,6 @@
 #define A9G_EVENT_CONN_FAIL            (1L << 4)
 #define A9G_EVENT_SEND_FAIL            (1L << 5)
 
-/* AT+CSTT command default*/
-char *CSTT_CHINA_MOBILE  = "AT+CSTT=\"CMNET\"";
-char *CSTT_CHINA_UNICOM  = "AT+CSTT=\"UNINET\"";
-char *CSTT_CHINA_TELECOM = "AT+CSTT=\"CTNET\"";
-
-
 static int cur_socket;
 static rt_event_t at_socket_event;
 static rt_mutex_t at_event_lock;
@@ -75,7 +69,6 @@ static int at_socket_event_recv(uint32_t event, uint32_t timeout, rt_uint8_t opt
 
     return recved;
 }
-
 
 /**
  * close socket by AT commands.
@@ -575,6 +568,116 @@ static const struct at_urc urc_table[] = {
         {"+RECEIVE,",   "\r\n",                 urc_recv_func},
 };
 
+#ifdef AT_USING_A9G_GPS
+/* 串口接收消息结构*/
+struct gps_rx_msg
+{
+    rt_device_t dev;
+    rt_size_t size;
+};
+/* 串口设备句柄 */
+static rt_device_t gps_serial;
+/* 消息队列控制块 */
+static struct rt_messagequeue gps_rx_mq;
+
+/* 接收数据回调函数 */
+static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
+{
+    struct gps_rx_msg msg;
+    rt_err_t result;
+    msg.dev = dev;
+    msg.size = size;
+
+    result = rt_mq_send(&gps_rx_mq, &msg, sizeof(msg));
+    if ( result == -RT_EFULL)
+    {
+        /* 消息队列满 */
+        rt_kprintf("GPS message queue full！\n");
+    }
+    return result;
+}
+
+static void serial_thread_entry(void *parameter)
+{
+    struct gps_rx_msg msg;
+    rt_err_t result;
+    rt_uint32_t rx_length;
+    static char rx_buffer[RT_SERIAL_RB_BUFSZ + 1];
+
+    while (1)
+    {
+        rt_memset(&msg, 0, sizeof(msg));
+        /* 从消息队列中读取消息*/
+        result = rt_mq_recv(&gps_rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
+        if (result == RT_EOK)
+        {
+            /* 从串口读取数据*/
+            rx_length = rt_device_read(msg.dev, 0, rx_buffer, msg.size);
+            rx_buffer[rx_length] = '\0';
+            /* 通过串口设备 GPS_serial 输出读取到的消息 */
+            rt_device_write(gps_serial, 0, rx_buffer, rx_length);
+            /* 打印数据 */
+            rt_kprintf("%s\n",rx_buffer);
+        }
+    }
+}
+
+static int uart_dma_sample(int argc, char *argv[])
+{
+    rt_err_t ret = RT_EOK;
+    char uart_name[RT_NAME_MAX];
+    static char msg_pool[256];
+    char str[] = "hello RT-Thread!\r\n";
+
+    if (argc == 2)
+    {
+        rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
+    }
+
+    /* 查找串口设备 */
+    gps_serial = rt_device_find(uart_name);
+    if (!gps_serial)
+    {
+        rt_kprintf("find %s failed!\n", uart_name);
+        return RT_ERROR;
+    }
+
+    /* 初始化消息队列 */
+    rt_mq_init(&gps_rx_mq, "rx_mq",
+               msg_pool,                 /* 存放消息的缓冲区 */
+               sizeof(struct gps_rx_msg),    /* 一条消息的最大长度 */
+               sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
+               RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
+
+    /* 以 DMA 接收及轮询发送方式打开串口设备 */
+    rt_device_open(gps_serial, RT_DEVICE_FLAG_DMA_RX);
+    /* 设置接收回调函数 */
+    rt_device_set_rx_indicate(gps_serial, uart_input);
+    /* 发送字符串 */
+    rt_device_write(gps_serial, 0, str, (sizeof(str) - 1));
+
+    /* 创建 serial 线程 */
+    rt_thread_t thread = rt_thread_create("gps_serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
+    /* 创建成功则启动线程 */
+    if (thread != RT_NULL)
+    {
+        rt_thread_startup(thread);
+    }
+    else
+    {
+        ret = RT_ERROR;
+    }
+
+    return ret;
+}
+/* 导出到 msh 命令列表中 */
+MSH_CMD_EXPORT(uart_dma_sample, uart device dma sample);
+#endif
+
 #define AT_SEND_CMD(resp, resp_line, timeout, cmd)                                                              \
     do                                                                                                          \
     {                                                                                                           \
@@ -594,7 +697,7 @@ static int a9g_reset(void)
 		at_response_t resp = RT_NULL;
 		at_exec_cmd(at_resp_set_info(resp, 128, 0, rt_tick_from_millisecond(300)), "AT+RST=1");
 }
-		
+
 /* init for a9g *///需要修改
 static void a9g_init_thread_entry(void *parameter)
 {
@@ -713,9 +816,6 @@ static void a9g_init_thread_entry(void *parameter)
             result = -RT_ERROR;
             goto __exit;
         }
-
-        /* the device default response timeout is 40 seconds, but it set to 15 seconds is convenient to use. */
-//        AT_SEND_CMD(resp, 2, 20 * 1000, "AT+CIPSHUT");
 				
 				/* Set GPRS attachment */
 				AT_SEND_CMD(resp, 2, 300, "AT+CGATT=1");
@@ -745,6 +845,17 @@ static void a9g_init_thread_entry(void *parameter)
             result = -RT_ERROR;
             goto __exit;
         }
+				
+#ifdef	AT_USING_A9G_GPS
+				
+				AT_SEND_CMD(resp, 0, 300, "AT+GPS?");
+				at_resp_parse_line_args_by_kw(resp, "+GPS:", "+GPS: %d", &qimux);
+        if (qimux == 0)
+        {
+            AT_SEND_CMD(resp, 0, 300, "AT+GPS=1");
+        }
+		
+#endif
 
     __exit:
         if (resp)
@@ -772,7 +883,7 @@ static void a9g_init_thread_entry(void *parameter)
     a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
 }
 
-/* /* init for A9G */
+/* init for A9G */
 int a9g_net_init(void)
 {
 #ifdef AT_DEVICE_A9G_INIT_ASYN
