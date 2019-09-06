@@ -28,15 +28,17 @@ Project File Date:  09/04/2019
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Work\Keil_v5\ARM\ARMCC\Bin'
 Build target 'rt-thread'
 compiling at_socket_a9g.c...
-applications\at_socket_a9g.c(699): warning:  #940-D: missing return statement at end of non-void function "a9g_reset" 
+applications\at_socket_a9g.c(693): warning:  #940-D: missing return statement at end of non-void function "a9g_reset" 
   }
-applications\at_socket_a9g.c(696): warning:  #177-D: variable "result"  was declared but never referenced
+applications\at_socket_a9g.c(690): warning:  #177-D: variable "result"  was declared but never referenced
   		rt_err_t result = RT_EOK;
-applications\at_socket_a9g.c: 2 warnings, 0 errors
+applications\at_socket_a9g.c(1147): warning:  #177-D: function "a9g_netdev_set_dns_server"  was declared but never referenced
+  static int a9g_netdev_set_dns_server(struct netdev *netdev, uint8_t dns_num, ip_addr_t *dns_server)
+applications\at_socket_a9g.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=136622 RO-data=15238 RW-data=1092 ZI-data=12540  
+Program Size: Code=136162 RO-data=15238 RW-data=1092 ZI-data=12540  
 After Build - User command #1: fromelf --bin .\build\keil\Obj\rt-thread.axf --output rtthread.bin
-".\build\keil\Obj\rt-thread.axf" - 0 Error(s), 2 Warning(s).
+".\build\keil\Obj\rt-thread.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -50,7 +52,7 @@ Package Vendor: Keil
   C:\Work\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:07
+Build Time Elapsed:  00:00:09
 </pre>
 </body>
 </html>

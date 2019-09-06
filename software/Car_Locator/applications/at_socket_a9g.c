@@ -619,24 +619,18 @@ static void serial_thread_entry(void *parameter)
             /* 打印数据 */
             rt_kprintf("%s\n",rx_buffer);
         }
+				rt_thread_delay(100);
     }
 }
 
-static int uart_dma_sample(int argc, char *argv[])
+static int uart_dma_sample(char *argv[])
 {
     rt_err_t ret = RT_EOK;
     char uart_name[RT_NAME_MAX];
     static char msg_pool[256];
-    char str[] = "hello RT-Thread!\r\n";
-
-    if (argc == 2)
-    {
-        rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
-    }
-    else
-    {
-        rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
-    }
+//    char str[] = "hello RT-Thread!\r\n";
+	
+    rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
 
     /* 查找串口设备 */
     gps_serial = rt_device_find(uart_name);
@@ -658,7 +652,7 @@ static int uart_dma_sample(int argc, char *argv[])
     /* 设置接收回调函数 */
     rt_device_set_rx_indicate(gps_serial, uart_input);
     /* 发送字符串 */
-    rt_device_write(gps_serial, 0, str, (sizeof(str) - 1));
+//    rt_device_write(gps_serial, 0, str, (sizeof(str) - 1));
 
     /* 创建 serial 线程 */
     rt_thread_t thread = rt_thread_create("gps_serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
@@ -1281,7 +1275,7 @@ const struct netdev_ops a9g_netdev_ops =
     a9g_netdev_set_down,
 
     RT_NULL, /* not support set ip, netmask, gatway address */
-    a9g_netdev_set_dns_server,
+    RT_NULL, /* not support set dns server */
     RT_NULL, /* not support set DHCP status */
 
     a9g_netdev_ping,
