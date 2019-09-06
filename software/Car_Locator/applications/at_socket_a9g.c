@@ -569,116 +569,338 @@ static const struct at_urc urc_table[] = {
 };
 
 #ifdef AT_USING_A9G_GPS
-/* 串口接收消息结构*/
-struct gps_rx_msg
+#include "gps.h"
+
+//从buf里面得到第cx个逗号所在的位置
+//返回值:0~0XFE,代表逗号所在位置的偏移.
+//       0XFF,代表不存在第cx个逗号
+rt_uint8_t NMEA_Comma_Pos(rt_uint8_t *buf,rt_uint8_t cx)
 {
-    rt_device_t dev;
-    rt_size_t size;
-};
+    rt_uint8_t *p=buf;
+    while(cx)
+    {
+        if(*buf=='*'||*buf<' '||*buf>'z')return 0XFF;//遇到'*'或者非法字符,则不存在第cx个逗号
+        if(*buf==',')cx--;
+        buf++;
+    }
+    return buf-p;
+}
+//m^n函数
+//返回值:m^n次方.
+rt_uint32_t NMEA_Pow(rt_uint8_t m,rt_uint8_t n)
+{
+    rt_uint32_t result=1;
+    while(n--)result*=m;
+    return result;
+}
+//str转换为数字,以','或者'*'结束
+//buf:数字存储区
+//dx:小数点位数,返回给调用函数
+//返回值:转换后的数值
+int NMEA_Str2num(rt_uint8_t *buf,rt_uint8_t*dx)
+{
+    rt_uint8_t *p=buf;
+    rt_uint32_t ires=0,fres=0;
+    rt_uint8_t ilen=0,flen=0,i;
+    rt_uint8_t mask=0;
+    int res;
+    while(1) //得到整数和小数的长度
+    {
+        if(*p=='-') {
+            mask|=0X02;    //是负数
+            p++;
+        }
+        if(*p==','||(*p=='*'))break;//遇到结束了
+        if(*p=='.') {
+            mask|=0X01;    //遇到小数点了
+            p++;
+        }
+        else if(*p>'9'||(*p<'0'))	//有非法字符
+        {
+            ilen=0;
+            flen=0;
+            break;
+        }
+        if(mask&0X01)flen++;
+        else ilen++;
+        p++;
+    }
+    if(mask&0X02)buf++;	//去掉负号
+    for(i=0; i<ilen; i++)	//得到整数部分数据
+    {
+        ires+=NMEA_Pow(10,ilen-1-i)*(buf[i]-'0');
+    }
+    if(flen>5)flen=5;	//最多取5位小数
+    *dx=flen;	 		//小数点位数
+    for(i=0; i<flen; i++)	//得到小数部分数据
+    {
+        fres+=NMEA_Pow(10,flen-1-i)*(buf[ilen+1+i]-'0');
+    }
+    res=ires*NMEA_Pow(10,flen)+fres;
+    if(mask&0X02)res=-res;
+    return res;
+}
+//分析GPGSV信息
+//gpsx:nmea信息结构体
+//buf:接收到的GPS数据缓冲区首地址
+void NMEA_GPGSV_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+{
+    rt_uint8_t *p,*p1,dx;
+    rt_uint8_t len,i,j,slx=0;
+    rt_uint8_t posx;
+    p=buf;
+    p1=(rt_uint8_t*)strstr((const char *)p,"$GPGSV");
+    len=p1[7]-'0';								//得到GPGSV的条数
+    posx=NMEA_Comma_Pos(p1,3); 					//得到可见卫星总数
+    if(posx!=0XFF)gpsx->svnum=NMEA_Str2num(p1+posx,&dx);
+    for(i=0; i<len; i++)
+    {
+        p1=(rt_uint8_t*)strstr((const char *)p,"$GPGSV");
+        for(j=0; j<4; j++)
+        {
+            posx=NMEA_Comma_Pos(p1,4+j*4);
+            if(posx!=0XFF)gpsx->slmsg[slx].num=NMEA_Str2num(p1+posx,&dx);	//得到卫星编号
+            else break;
+            posx=NMEA_Comma_Pos(p1,5+j*4);
+            if(posx!=0XFF)gpsx->slmsg[slx].eledeg=NMEA_Str2num(p1+posx,&dx);//得到卫星仰角
+            else break;
+            posx=NMEA_Comma_Pos(p1,6+j*4);
+            if(posx!=0XFF)gpsx->slmsg[slx].azideg=NMEA_Str2num(p1+posx,&dx);//得到卫星方位角
+            else break;
+            posx=NMEA_Comma_Pos(p1,7+j*4);
+            if(posx!=0XFF)gpsx->slmsg[slx].sn=NMEA_Str2num(p1+posx,&dx);	//得到卫星信噪比
+            else break;
+            slx++;
+        }
+        p=p1+1;//切换到下一个GPGSV信息
+    }
+}
+//分析GPGGA信息
+//gpsx:nmea信息结构体
+//buf:接收到的GPS数据缓冲区首地址
+void NMEA_GPGGA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+{
+    rt_uint8_t *p1,dx;
+    rt_uint8_t posx;
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPGGA");
+    posx=NMEA_Comma_Pos(p1,6);								//得到GPS状态
+    if(posx!=0XFF)gpsx->gpssta=NMEA_Str2num(p1+posx,&dx);
+    posx=NMEA_Comma_Pos(p1,7);								//得到用于定位的卫星数
+    if(posx!=0XFF)gpsx->posslnum=NMEA_Str2num(p1+posx,&dx);
+    posx=NMEA_Comma_Pos(p1,9);								//得到海拔高度
+    if(posx!=0XFF)gpsx->altitude=NMEA_Str2num(p1+posx,&dx);
+}
+//分析GPGSA信息
+//gpsx:nmea信息结构体
+//buf:接收到的GPS数据缓冲区首地址
+void NMEA_GPGSA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+{
+    rt_uint8_t *p1,dx;
+    rt_uint8_t posx;
+    rt_uint8_t i;
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPGSA");
+    posx=NMEA_Comma_Pos(p1,2);								//得到定位类型
+    if(posx!=0XFF)gpsx->fixmode=NMEA_Str2num(p1+posx,&dx);
+    for(i=0; i<12; i++)										//得到定位卫星编号
+    {
+        posx=NMEA_Comma_Pos(p1,3+i);
+        if(posx!=0XFF)gpsx->possl[i]=NMEA_Str2num(p1+posx,&dx);
+        else break;
+    }
+    posx=NMEA_Comma_Pos(p1,15);								//得到PDOP位置精度因子
+    if(posx!=0XFF)gpsx->pdop=NMEA_Str2num(p1+posx,&dx);
+    posx=NMEA_Comma_Pos(p1,16);								//得到HDOP位置精度因子
+    if(posx!=0XFF)gpsx->hdop=NMEA_Str2num(p1+posx,&dx);
+    posx=NMEA_Comma_Pos(p1,17);								//得到VDOP位置精度因子
+    if(posx!=0XFF)gpsx->vdop=NMEA_Str2num(p1+posx,&dx);
+}
+//分析GPRMC信息
+//gpsx:nmea信息结构体
+//buf:接收到的GPS数据缓冲区首地址
+void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+{
+    rt_uint8_t *p1,dx;
+    rt_uint8_t posx;
+    rt_uint32_t temp;
+    float rs;
+    p1=(rt_uint8_t*)strstr((const char *)buf,"GPRMC");//"$GPRMC",经常有&和GPRMC分开的情况,故只判断GPRMC.
+    posx=NMEA_Comma_Pos(p1,1);								//得到UTC时间
+    if(posx!=0XFF)
+    {
+        temp=NMEA_Str2num(p1+posx,&dx)/NMEA_Pow(10,dx);	 	//得到UTC时间,去掉ms
+        gpsx->utc.hour=temp/10000;
+        gpsx->utc.min=(temp/100)%100;
+        gpsx->utc.sec=temp%100;
+    }
+    posx=NMEA_Comma_Pos(p1,3);								//得到纬度
+    if(posx!=0XFF)
+    {
+        temp=NMEA_Str2num(p1+posx,&dx);
+        gpsx->latitude=temp/NMEA_Pow(10,dx+2);	//得到°
+        rs=temp%NMEA_Pow(10,dx+2);				//得到'
+        gpsx->latitude=gpsx->latitude*NMEA_Pow(10,5)+(rs*NMEA_Pow(10,5-dx))/60;//转换为°
+    }
+    posx=NMEA_Comma_Pos(p1,4);								//南纬还是北纬
+    if(posx!=0XFF)gpsx->nshemi=*(p1+posx);
+    posx=NMEA_Comma_Pos(p1,5);								//得到经度
+    if(posx!=0XFF)
+    {
+        temp=NMEA_Str2num(p1+posx,&dx);
+        gpsx->longitude=temp/NMEA_Pow(10,dx+2);	//得到°
+        rs=temp%NMEA_Pow(10,dx+2);				//得到'
+        gpsx->longitude=gpsx->longitude*NMEA_Pow(10,5)+(rs*NMEA_Pow(10,5-dx))/60;//转换为°
+    }
+    posx=NMEA_Comma_Pos(p1,6);								//东经还是西经
+    if(posx!=0XFF)gpsx->ewhemi=*(p1+posx);
+    posx=NMEA_Comma_Pos(p1,9);								//得到UTC日期
+    if(posx!=0XFF)
+    {
+        temp=NMEA_Str2num(p1+posx,&dx);		 				//得到UTC日期
+        gpsx->utc.date=temp/10000;
+        gpsx->utc.month=(temp/100)%100;
+        gpsx->utc.year=2000+temp%100;
+    }
+}
+//分析GPVTG信息
+//gpsx:nmea信息结构体
+//buf:接收到的GPS数据缓冲区首地址
+void NMEA_GPVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+{
+    rt_uint8_t *p1,dx;
+    rt_uint8_t posx;
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPVTG");
+    posx=NMEA_Comma_Pos(p1,7);								//得到地面速率
+    if(posx!=0XFF)
+    {
+        gpsx->speed=NMEA_Str2num(p1+posx,&dx);
+        if(dx<3)gpsx->speed*=NMEA_Pow(10,3-dx);	 	 		//确保扩大1000倍
+    }
+}
+//提取NMEA-0183信息
+//gpsx:nmea信息结构体
+//buf:接收到的GPS数据缓冲区首地址
+void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+{
+    NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
+    NMEA_GPGGA_Analysis(gpsx,buf);	//GPGGA解析
+    NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
+    NMEA_GPRMC_Analysis(gpsx,buf);	//GPRMC解析
+    NMEA_GPVTG_Analysis(gpsx,buf);	//GPVTG解析
+}
+
+/* 串口接收事件标志 */
+#define UART_RX_EVENT (1 << 0)
+
+/* 事件控制块 */
+static struct rt_event event;
 /* 串口设备句柄 */
-static rt_device_t gps_serial;
-/* 消息队列控制块 */
-static struct rt_messagequeue gps_rx_mq;
+static rt_device_t serial = RT_NULL;
 
 /* 接收数据回调函数 */
 static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
 {
-    struct gps_rx_msg msg;
-    rt_err_t result;
-    msg.dev = dev;
-    msg.size = size;
+    /* 发送事件 */
+    rt_event_send(&event, UART_RX_EVENT);
+    
+    return RT_EOK;
+}
 
-    result = rt_mq_send(&gps_rx_mq, &msg, sizeof(msg));
-    if ( result == -RT_EFULL)
+rt_uint8_t uart_getchar(void)
+{
+    rt_uint32_t e;
+    rt_uint8_t ch;
+    
+    /* 读取1字节数据 */
+    while (rt_device_read(serial, 0, &ch, 1) != 1)
     {
-        /* 消息队列满 */
-        rt_kprintf("GPS message queue full！\n");
+         /* 接收事件 */
+        rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
     }
-    return result;
+
+    return ch;
 }
 
 static void serial_thread_entry(void *parameter)
 {
-    struct gps_rx_msg msg;
-    rt_err_t result;
-    rt_uint32_t rx_length;
-    static char rx_buffer[RT_SERIAL_RB_BUFSZ + 1];
+    uint16_t rx_get_lenth = 0;
+		nmea_msg gpsx;				/* GPS信息 */
+		uint8_t gps_rx_buffer[275];
 
     while (1)
     {
-        rt_memset(&msg, 0, sizeof(msg));
-        /* 从消息队列中读取消息*/
-        result = rt_mq_recv(&gps_rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
-        if (result == RT_EOK)
-        {
-            /* 从串口读取数据*/
-            rx_length = rt_device_read(msg.dev, 0, rx_buffer, msg.size);
-            rx_buffer[rx_length] = '\0';
-            /* 通过串口设备 GPS_serial 输出读取到的消息 */
-            rt_device_write(gps_serial, 0, rx_buffer, rx_length);
-            /* 打印数据 */
-            rt_kprintf("%s\n",rx_buffer);
-        }
-				rt_thread_delay(100);
+				gps_rx_buffer[rx_get_lenth++] = uart_getchar() + 1;
+				
+				if(rx_get_lenth >= 274)
+				{
+						rx_get_lenth = 0;
+						rt_kprintf("%s", gps_rx_buffer);
+//						GPS_Analysis(&gpsx, gps_rx_buffer);
+//						rt_kprintf("hour: %d\n ", gpsx.utc.hour);
+//						rt_kprintf("speed: %d\n", gpsx.speed);
+//						rt_kprintf("gpsx.latitude: %d\n", gpsx.latitude);
+//						rt_kprintf("gpsx.longitude: %d\n", gpsx.longitude);
+				}
     }
 }
 
-static int uart_dma_sample(char *argv[])
+static int uart_sample(int argc, char *argv[])
 {
     rt_err_t ret = RT_EOK;
+		struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT; /* 配置参数 */
     char uart_name[RT_NAME_MAX];
-<<<<<<< HEAD
-    static char msg_pool[256];
 //    char str[] = "hello RT-Thread!\r\n";
-	
-    rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
-=======
-    static char gps_msg_pool[256];
-    char str[] = "hello RT-Thread!\r\n";
 
-		rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
->>>>>>> 6251a885e3008a0d1274f164298c80ee1450d597
+    if (argc == 2)
+    {
+        rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
+    }
+		
+		/* 初始化事件对象 */
+    rt_event_init(&event, "event", RT_IPC_FLAG_FIFO); 
 
-    /* 查找串口设备 */
-    gps_serial = rt_device_find(uart_name);
-    if (!gps_serial)
+    /* 查找系统中的串口设备 */
+    serial = rt_device_find(uart_name);
+    if (!serial)
     {
         rt_kprintf("find %s failed!\n", uart_name);
         return RT_ERROR;
     }
 
-    /* 初始化消息队列 */
-    rt_mq_init(&gps_rx_mq, "gps_rx_mq",
-               gps_msg_pool,                 /* 存放消息的缓冲区 */
-               sizeof(struct gps_rx_msg),    /* 一条消息的最大长度 */
-               sizeof(gps_msg_pool),         /* 存放消息的缓冲区大小 */
-               RT_IPC_FLAG_PRIO);        		 /* 如果有多个线程等待，按照线程优先级得到的方法分配消息 */
-
-    /* 以 DMA 接收及轮询发送方式打开串口设备 */
-    rt_device_open(gps_serial, RT_DEVICE_FLAG_DMA_RX);
+    /* 以中断接收及轮询发送模式打开串口设备 */
+    rt_device_open(serial, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);
+		
+		config.baud_rate = BAUD_RATE_9600;
+		config.data_bits = DATA_BITS_8;
+		config.stop_bits = STOP_BITS_1;
+		config.parity = PARITY_NONE;
+		
+		/* 打开设备后才可修改串口配置参数 */
+		rt_device_control(serial, RT_DEVICE_CTRL_CONFIG, &config);
+		
     /* 设置接收回调函数 */
-    rt_device_set_rx_indicate(gps_serial, uart_input);
-    /* 发送字符串 */
-//    rt_device_write(gps_serial, 0, str, (sizeof(str) - 1));
+    rt_device_set_rx_indicate(serial, uart_input);
 
     /* 创建 serial 线程 */
-    rt_thread_t thread = rt_thread_create("gps_serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
+    rt_thread_t thread = rt_thread_create("serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
     /* 创建成功则启动线程 */
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
-				LOG_D("GPS recive thread start!");
     }
     else
     {
         ret = RT_ERROR;
-				LOG_D("GPS recive thread start failed!");
     }
 
     return ret;
 }
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(uart_dma_sample, uart device dma sample);
+MSH_CMD_EXPORT(uart_sample, uart device sample);
+
 #endif
 
 #define AT_SEND_CMD(resp, resp_line, timeout, cmd)                                                              \
@@ -694,14 +916,18 @@ MSH_CMD_EXPORT(uart_dma_sample, uart device dma sample);
 static int a9g_netdev_set_info(struct netdev *netdev);
 static int a9g_netdev_check_link_status(struct netdev *netdev); 
 
+/* reset the a9g device */
 static int a9g_reset(void)
 {
 		rt_err_t result = RT_EOK;
 		at_response_t resp = RT_NULL;
+		
 		at_exec_cmd(at_resp_set_info(resp, 128, 0, rt_tick_from_millisecond(300)), "AT+RST=1");
+		
+		return result;
 }
 
-/* init for a9g *///需要修改
+/* init for a9g */
 static void a9g_init_thread_entry(void *parameter)
 {
 #define AT_RETRY											 10
@@ -883,7 +1109,7 @@ static void a9g_init_thread_entry(void *parameter)
 
     /* set network interface device status and address information */
     a9g_netdev_set_info(netdev_get_by_name(A9G_NETDEV_NAME));
-    a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
+//    a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
 }
 
 /* init for A9G */
@@ -903,7 +1129,7 @@ int a9g_net_init(void)
     }
 #ifdef AT_USING_A9G_GPS
 		
-		uart_dma_sample(RT_NULL);
+//		uart_dma_sample(RT_NULL);
 		
 #endif
 		
@@ -1036,38 +1262,6 @@ static int a9g_netdev_set_info(struct netdev *netdev)
         netdev_low_level_set_ipaddr(netdev, &addr);
     }
 
-    /* set network interface device dns server */
-//    {
-//        #define DNS_ADDR_SIZE_MAX   16
-//        char dns_server1[DNS_ADDR_SIZE_MAX] = {0}, dns_server2[DNS_ADDR_SIZE_MAX] = {0};
-
-//        at_resp_set_info(resp, A9G_DNS_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
-
-//        /* send "AT+CDNSGIP?" commond to get DNS servers address */
-//        if (at_exec_cmd(resp, "AT+CDNSGIP?") < 0)
-//        {
-//            result = -RT_ERROR;
-//            goto __exit;
-//        }
-
-//        if (at_resp_parse_line_args_by_kw(resp, "PrimaryDns:", "PrimaryDns:%s", dns_server1) <= 0 ||
-//                at_resp_parse_line_args_by_kw(resp, "SecondaryDns:", "SecondaryDns:%s", dns_server2) <= 0)
-//        {
-//            LOG_E("Prase \"AT+CDNSGIP?\" commands resposne data error!");
-//            result = -RT_ERROR;
-//            goto __exit;
-//        }
-
-//        LOG_D("A9G primary DNS server address: %s", dns_server1);
-//        LOG_D("A9G secondary DNS server address: %s", dns_server2);
-
-//        inet_aton(dns_server1, &addr);
-//        netdev_low_level_set_dns_server(netdev, 0, &addr);
-
-//        inet_aton(dns_server2, &addr);
-//        netdev_low_level_set_dns_server(netdev, 1, &addr);
-//    }
-
 __exit:
     if (resp)
     {
@@ -1098,7 +1292,7 @@ static void check_link_status_entry(void *parameter)
     }
 
     while (1)
-    { 
+    {
         rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
 
         /* send "AT+CGREG?" commond  to check netweork interface device link status */
@@ -1124,6 +1318,15 @@ static void check_link_status_entry(void *parameter)
     }
 }
 
+/**
+ * The function is checking the a9g net link status.
+ * @NOTE
+ * 
+ * @param netdev the network interface device to change
+ * 
+ * @retrun 0: cheging success
+ *        -1: the net device is NULL
+*/
 static int a9g_netdev_check_link_status(struct netdev *netdev)
 {
 #define A9G_LINK_THREAD_STACK_SIZE     512
@@ -1165,47 +1368,6 @@ static int a9g_netdev_set_down(struct netdev *netdev)
     netdev_low_level_set_status(netdev, RT_FALSE);
     LOG_D("The network interface device(%s) set down status", netdev->name);
     return RT_EOK;
-}
-
-static int a9g_netdev_set_dns_server(struct netdev *netdev, uint8_t dns_num, ip_addr_t *dns_server)
-{
-#define A9G_DNS_RESP_LEN     8
-#define A9G_DNS_RESP_TIMEO   rt_tick_from_millisecond(300)
-
-    at_response_t resp = RT_NULL;
-    int result = RT_EOK;
-
-    RT_ASSERT(netdev);
-    RT_ASSERT(dns_server);
-
-    rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
-
-    resp = at_create_resp(A9G_DNS_RESP_LEN, 0, A9G_DNS_RESP_TIMEO);
-    if (resp == RT_NULL)
-    {
-        LOG_D("a9g set dns server failed, no memory for response object.");
-        result = -RT_ENOMEM;
-        goto __exit;
-    }
-
-    /* send "AT+CDNSGIP=<pri_dns>[,<sec_dns>]" commond to set dns servers */
-    if (at_exec_cmd(resp, "AT+CDNSGIP=\"%s\"", inet_ntoa(*dns_server)) < 0)
-    {
-        result = -RT_ERROR;
-        goto __exit;
-    }
-
-    netdev_low_level_set_dns_server(netdev, dns_num, dns_server);
-
-__exit:
-    if (resp)
-    {
-        at_delete_resp(resp);
-    }
-
-    rt_mutex_release(at_event_lock);
-
-    return result;
 }
 
 static int a9g_netdev_ping(struct netdev *netdev, const char *host, size_t data_len, uint32_t timeout, struct netdev_ping_resp *ping_resp)
@@ -1363,8 +1525,6 @@ static int at_socket_device_init(void)
     }
 
     /* initialize a9g network */
-//    rt_pin_mode(AT_DEVICE_POWER_PIN, PIN_MODE_OUTPUT);
-//    rt_pin_mode(AT_DEVICE_STATUS_PIN, PIN_MODE_INPUT);
     a9g_net_init();
 
     /* set a9g AT Socket options */

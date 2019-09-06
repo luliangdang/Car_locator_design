@@ -261,7 +261,6 @@ menu "Board extended module Drivers"
 			bool "Enable A9G GPS"
 			select BSP_USING_UART
 			select BSP_USING_UART2
-			select BSP_UART2_RX_USING_DMA
 			default n
 			if AT_USING_A9G_GPS
 				config GPS_UART_NAME
