@@ -627,10 +627,17 @@ static int uart_dma_sample(char *argv[])
 {
     rt_err_t ret = RT_EOK;
     char uart_name[RT_NAME_MAX];
+<<<<<<< HEAD
     static char msg_pool[256];
 //    char str[] = "hello RT-Thread!\r\n";
 	
     rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
+=======
+    static char gps_msg_pool[256];
+    char str[] = "hello RT-Thread!\r\n";
+
+		rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
+>>>>>>> 6251a885e3008a0d1274f164298c80ee1450d597
 
     /* 查找串口设备 */
     gps_serial = rt_device_find(uart_name);
@@ -641,11 +648,11 @@ static int uart_dma_sample(char *argv[])
     }
 
     /* 初始化消息队列 */
-    rt_mq_init(&gps_rx_mq, "rx_mq",
-               msg_pool,                 /* 存放消息的缓冲区 */
+    rt_mq_init(&gps_rx_mq, "gps_rx_mq",
+               gps_msg_pool,                 /* 存放消息的缓冲区 */
                sizeof(struct gps_rx_msg),    /* 一条消息的最大长度 */
-               sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
-               RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
+               sizeof(gps_msg_pool),         /* 存放消息的缓冲区大小 */
+               RT_IPC_FLAG_PRIO);        		 /* 如果有多个线程等待，按照线程优先级得到的方法分配消息 */
 
     /* 以 DMA 接收及轮询发送方式打开串口设备 */
     rt_device_open(gps_serial, RT_DEVICE_FLAG_DMA_RX);
@@ -660,10 +667,12 @@ static int uart_dma_sample(char *argv[])
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
+				LOG_D("GPS recive thread start!");
     }
     else
     {
         ret = RT_ERROR;
+				LOG_D("GPS recive thread start failed!");
     }
 
     return ret;
@@ -848,7 +857,7 @@ static void a9g_init_thread_entry(void *parameter)
         {
             AT_SEND_CMD(resp, 0, 300, "AT+GPS=1");
         }
-		
+				
 #endif
 
     __exit:
@@ -892,8 +901,22 @@ int a9g_net_init(void)
     {
         LOG_E("Create AT initialization thread fail!");
     }
+#ifdef AT_USING_A9G_GPS
+		
+		uart_dma_sample(RT_NULL);
+		
+#endif
+		
 #else
+		
     a9g_init_thread_entry(RT_NULL);
+		
+#ifdef AT_USING_A9G_GPS
+		
+		uart_dma_sample(RT_NULL);
+		
+#endif
+		
 #endif
 
     return RT_EOK;
