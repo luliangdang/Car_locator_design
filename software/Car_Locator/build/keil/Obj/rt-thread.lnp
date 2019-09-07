@@ -18,6 +18,7 @@
 ".\build\keil\obj\key.o"
 ".\build\keil\obj\led.o"
 ".\build\keil\obj\at_socket_a9g.o"
+".\build\keil\obj\minmea.o"
 ".\build\keil\obj\board.o"
 ".\build\keil\obj\stm32f4xx_hal_msp.o"
 ".\build\keil\obj\sdcard_port.o"

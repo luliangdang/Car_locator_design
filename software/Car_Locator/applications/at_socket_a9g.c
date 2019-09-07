@@ -570,6 +570,7 @@ static const struct at_urc urc_table[] = {
 
 #ifdef AT_USING_A9G_GPS
 #include "gps.h"
+#include "minmea.h"
 
 //从buf里面得到第cx个逗号所在的位置
 //返回值:0~0XFE,代表逗号所在位置的偏移.
@@ -675,14 +676,15 @@ void NMEA_GPGSV_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         p=p1+1;//切换到下一个GPGSV信息
     }
 }
-//分析GPGGA信息
+//分析GNGGA信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS数据缓冲区首地址
-void NMEA_GPGGA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+void NMEA_GNGGA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
     rt_uint8_t *p1,dx;
     rt_uint8_t posx;
-    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPGGA");
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GNGGA");
+		
     posx=NMEA_Comma_Pos(p1,6);								//得到GPS状态
     if(posx!=0XFF)gpsx->gpssta=NMEA_Str2num(p1+posx,&dx);
     posx=NMEA_Comma_Pos(p1,7);								//得到用于定位的卫星数
@@ -701,7 +703,7 @@ void NMEA_GPGSA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
     p1=(rt_uint8_t*)strstr((const char *)buf,"$GPGSA");
     posx=NMEA_Comma_Pos(p1,2);								//得到定位类型
     if(posx!=0XFF)gpsx->fixmode=NMEA_Str2num(p1+posx,&dx);
-    for(i=0; i<12; i++)										//得到定位卫星编号
+    for(i=0; i<12; i++)												//得到定位卫星编号
     {
         posx=NMEA_Comma_Pos(p1,3+i);
         if(posx!=0XFF)gpsx->possl[i]=NMEA_Str2num(p1+posx,&dx);
@@ -714,16 +716,16 @@ void NMEA_GPGSA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
     posx=NMEA_Comma_Pos(p1,17);								//得到VDOP位置精度因子
     if(posx!=0XFF)gpsx->vdop=NMEA_Str2num(p1+posx,&dx);
 }
-//分析GPRMC信息
+//分析GNRMC信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS数据缓冲区首地址
-void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+void NMEA_GNRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
     rt_uint8_t *p1,dx;
     rt_uint8_t posx;
     rt_uint32_t temp;
     float rs;
-    p1=(rt_uint8_t*)strstr((const char *)buf,"GPRMC");//"$GPRMC",经常有&和GPRMC分开的情况,故只判断GPRMC.
+    p1=(rt_uint8_t*)strstr((const char *)buf,"GNRMC");//"$GNRMC",经常有&和GNRMC分开的情况,故只判断GNRMC.
     posx=NMEA_Comma_Pos(p1,1);								//得到UTC时间
     if(posx!=0XFF)
     {
@@ -761,14 +763,14 @@ void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         gpsx->utc.year=2000+temp%100;
     }
 }
-//分析GPVTG信息
+//分析GNVTG信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS数据缓冲区首地址
-void NMEA_GPVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+void NMEA_GNVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
     rt_uint8_t *p1,dx;
     rt_uint8_t posx;
-    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPVTG");
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GNVTG");
     posx=NMEA_Comma_Pos(p1,7);								//得到地面速率
     if(posx!=0XFF)
     {
@@ -782,10 +784,10 @@ void NMEA_GPVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
     NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
-    NMEA_GPGGA_Analysis(gpsx,buf);	//GPGGA解析
+    NMEA_GNGGA_Analysis(gpsx,buf);	//GNGGA解析
     NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
-    NMEA_GPRMC_Analysis(gpsx,buf);	//GPRMC解析
-    NMEA_GPVTG_Analysis(gpsx,buf);	//GPVTG解析
+    NMEA_GNRMC_Analysis(gpsx,buf);	//GPRMC解析
+    NMEA_GNVTG_Analysis(gpsx,buf);	//GPVTG解析
 }
 
 /* 串口接收事件标志 */
@@ -794,10 +796,10 @@ void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 /* 事件控制块 */
 static struct rt_event event;
 /* 串口设备句柄 */
-static rt_device_t serial = RT_NULL;
+static rt_device_t uart_device = RT_NULL;
 
-/* 接收数据回调函数 */
-static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
+/* 回调函数 */
+static rt_err_t uart_intput(rt_device_t dev, rt_size_t size)
 {
     /* 发送事件 */
     rt_event_send(&event, UART_RX_EVENT);
@@ -805,13 +807,13 @@ static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
     return RT_EOK;
 }
 
-rt_uint8_t uart_getchar(void)
+static rt_uint8_t uart_getchar(void)
 {
     rt_uint32_t e;
     rt_uint8_t ch;
     
     /* 读取1字节数据 */
-    while (rt_device_read(serial, 0, &ch, 1) != 1)
+    while (rt_device_read(uart_device, 0, &ch, 1) != 1)
     {
          /* 接收事件 */
         rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
@@ -820,86 +822,152 @@ rt_uint8_t uart_getchar(void)
     return ch;
 }
 
-static void serial_thread_entry(void *parameter)
+static void uart_putchar(const rt_uint8_t c)
 {
-    uint16_t rx_get_lenth = 0;
-		nmea_msg gpsx;				/* GPS信息 */
-		uint8_t gps_rx_buffer[275];
-
-    while (1)
+    rt_size_t len = 0;
+    rt_uint32_t timeout = 0;
+    do
     {
-				gps_rx_buffer[rx_get_lenth++] = uart_getchar() + 1;
-				
-				if(rx_get_lenth >= 274)
-				{
-						rx_get_lenth = 0;
-						rt_kprintf("%s", gps_rx_buffer);
-//						GPS_Analysis(&gpsx, gps_rx_buffer);
-//						rt_kprintf("hour: %d\n ", gpsx.utc.hour);
-//						rt_kprintf("speed: %d\n", gpsx.speed);
-//						rt_kprintf("gpsx.latitude: %d\n", gpsx.latitude);
-//						rt_kprintf("gpsx.longitude: %d\n", gpsx.longitude);
-				}
+        len = rt_device_write(uart_device, 0, &c, 1);
+        timeout++;
+    }
+    while (len != 1 && timeout < 500);
+}
+
+static void uart_putstring(const rt_uint8_t *s)
+{
+    while(*s)
+    {
+        uart_putchar(*s++);
     }
 }
 
-static int uart_sample(int argc, char *argv[])
+static rt_err_t uart_open(rt_device_t device)
 {
-    rt_err_t ret = RT_EOK;
-		struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT; /* 配置参数 */
-    char uart_name[RT_NAME_MAX];
-//    char str[] = "hello RT-Thread!\r\n";
+    rt_err_t res;
 
-    if (argc == 2)
-    {
-        rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
+    if (device != RT_NULL)
+    {      
+        res = rt_device_set_rx_indicate(device, uart_intput);
+        /* 检查返回值 */
+        if (res != RT_EOK)
+        {
+            rt_kprintf("set %s rx indicate error.%d\n",device->parent.name,res);
+            return -RT_ERROR;
+        }
+
+        /* 打开设备，以可读写、中断方式 */
+        res = rt_device_open(device, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX );       
+        /* 检查返回值 */
+        if (res != RT_EOK)
+        {
+            rt_kprintf("open %s device error.%d\n",device->parent.name,res);
+            return -RT_ERROR;
+        }
+        
+        /* 初始化事件对象 */
+        rt_event_init(&event, "event", RT_IPC_FLAG_FIFO); 
+        
+        return RT_EOK;
     }
     else
     {
-        rt_strncpy(uart_name, GPS_UART_NAME, RT_NAME_MAX);
+        rt_kprintf("can't open %s device.\n",device->parent.name);
+        return -RT_ERROR;
     }
-		
-		/* 初始化事件对象 */
-    rt_event_init(&event, "event", RT_IPC_FLAG_FIFO); 
+}
 
-    /* 查找系统中的串口设备 */
-    serial = rt_device_find(uart_name);
-    if (!serial)
+static void data_read(uint8_t* buff, int len)
+{
+    rt_uint8_t uart_rx_byte;
+    rt_uint8_t count = 0;
+    
+    do
+		{
+        uart_rx_byte = uart_getchar();
+        buff[count] = uart_rx_byte;
+        count ++;       
+    }while((uart_rx_byte != '\n') && (count <= len));
+    
+    buff[count] = 0;
+}
+
+nmea_msg gpsx;
+void gps_thread_entry(void *parameter)
+{
+    uint8_t line[MINMEA_MAX_LENGTH];
+
+    while(1)
     {
-        rt_kprintf("find %s failed!\n", uart_name);
+        data_read(line, MINMEA_MAX_LENGTH);
+			
+				rt_kprintf("%s", line);
+				
+				GPS_Analysis(&gpsx, line);
+				
+//				rt_kprintf("gps latitude: %d %1c\n", gpsx.latitude /= 100000, gpsx.nshemi);
+//				rt_kprintf("gps longitude: %d %1c\n", gpsx.longitude /= 100000, gpsx.ewhemi);
+    }
+}
+
+rt_err_t gps_init(void)
+{ 
+    rt_thread_t tid;
+    
+    /* 查找系统中的串口设备 */
+    uart_device = rt_device_find(GPS_UART_NAME);
+    
+    if (RT_NULL == uart_device)
+    {
+        rt_kprintf(" find device %s failed!\n",GPS_UART_NAME);  
+        return RT_EINVAL;
+    }
+    struct serial_configure gps_use_config = 
+    {
+        BAUD_RATE_9600,   /* 9600 bits/s */
+        DATA_BITS_8,      /* 8 databits */
+        STOP_BITS_1,      /* 1 stopbit */
+        PARITY_NONE,      /* No parity  */ 
+        BIT_ORDER_LSB,    /* LSB first sent */
+        NRZ_NORMAL,       /* Normal mode */
+        1024,             /* Buffer size */
+        0   
+    };
+
+    if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
+    {
+        rt_kprintf("uart config failed.\n");
         return RT_ERROR;
     }
 
-    /* 以中断接收及轮询发送模式打开串口设备 */
-    rt_device_open(serial, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);
-		
-		config.baud_rate = BAUD_RATE_9600;
-		config.data_bits = DATA_BITS_8;
-		config.stop_bits = STOP_BITS_1;
-		config.parity = PARITY_NONE;
-		
-		/* 打开设备后才可修改串口配置参数 */
-		rt_device_control(serial, RT_DEVICE_CTRL_CONFIG, &config);
-		
-    /* 设置接收回调函数 */
-    rt_device_set_rx_indicate(serial, uart_input);
-
-    /* 创建 serial 线程 */
-    rt_thread_t thread = rt_thread_create("serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
-    /* 创建成功则启动线程 */
-    if (thread != RT_NULL)
+    if (uart_open(uart_device) != RT_EOK)
     {
-        rt_thread_startup(thread);
+        rt_kprintf("uart open error.\n");
+        return RT_ERROR;
     }
-    else
+     if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
     {
-        ret = RT_ERROR;
+        rt_kprintf("uart config failed.\n");
+        return RT_ERROR;
     }
 
-    return ret;
+    tid = rt_thread_create("gps", 
+                            gps_thread_entry,
+                            RT_NULL,
+                            2048,
+                            8,
+                            200);
+    if (tid == RT_NULL)
+    {
+        return RT_ERROR;
+    }
+
+    rt_thread_startup(tid);
+
+    return RT_EOK;
 }
-/* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(uart_sample, uart device sample);
+MSH_CMD_EXPORT(gps_init,APP INIT);
+
 
 #endif
 
@@ -1129,7 +1197,7 @@ int a9g_net_init(void)
     }
 #ifdef AT_USING_A9G_GPS
 		
-//		uart_dma_sample(RT_NULL);
+//		gps_init(RT_NULL);
 		
 #endif
 		
@@ -1139,7 +1207,7 @@ int a9g_net_init(void)
 		
 #ifdef AT_USING_A9G_GPS
 		
-		uart_dma_sample(RT_NULL);
+		gps_init(RT_NULL);
 		
 #endif
 		

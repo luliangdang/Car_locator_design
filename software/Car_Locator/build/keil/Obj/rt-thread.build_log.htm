@@ -22,19 +22,19 @@ Dialog DLL:      TCM.DLL V1.36.2.0
  
 <h2>Project:</h2>
 E:\Car_locator_design\software\Car_Locator\project.uvprojx
-Project File Date:  09/06/2019
+Project File Date:  09/07/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Work\Keil_v5\ARM\ARMCC\Bin'
 Build target 'rt-thread'
 compiling at_socket_a9g.c...
-applications\at_socket_a9g.c(826): warning:  #177-D: variable "gpsx"  was declared but never referenced
-  		nmea_msg gpsx;				/* GPS–≈œ¢ */
-applications\at_socket_a9g.c(1330): warning:  #177-D: function "a9g_netdev_check_link_status"  was declared but never referenced
+applications\at_socket_a9g.c(837): warning:  #177-D: function "uart_putstring"  was declared but never referenced
+  static void uart_putstring(const rt_uint8_t *s)
+applications\at_socket_a9g.c(1398): warning:  #177-D: function "a9g_netdev_check_link_status"  was declared but never referenced
   static int a9g_netdev_check_link_status(struct netdev *netdev)
 applications\at_socket_a9g.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=134762 RO-data=15074 RW-data=1076 ZI-data=12204  
+Program Size: Code=136558 RO-data=15062 RW-data=1076 ZI-data=12300  
 After Build - User command #1: fromelf --bin .\build\keil\Obj\rt-thread.axf --output rtthread.bin
 ".\build\keil\Obj\rt-thread.axf" - 0 Error(s), 2 Warning(s).
 
@@ -50,7 +50,7 @@ Package Vendor: Keil
   C:\Work\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:11
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>

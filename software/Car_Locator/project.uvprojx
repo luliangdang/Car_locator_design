@@ -482,6 +482,11 @@
               <FileType>1</FileType>
               <FilePath>applications\at_socket_a9g.c</FilePath>
             </File>
+            <File>
+              <FileName>minmea.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\minmea.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

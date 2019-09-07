@@ -33,7 +33,7 @@ __packed typedef struct
 	rt_uint8_t hour; 	//小时
 	rt_uint8_t min; 	//分钟
 	rt_uint8_t sec; 	//秒钟
-}nmea_utc_time;   	   
+}nmea_utc_time;
 //NMEA 0183 协议解析后数据存放结构体
 __packed typedef struct  
 {										    
@@ -132,7 +132,7 @@ __packed typedef struct
 
 //UBLOX NEO-6M 刷新速率配置结构体
 __packed typedef struct  
-{										    
+{
  	rt_uint16_t header;				//cfg header,固定为0X62B5(小端模式)
 	rt_uint16_t id;						//CFG RATE ID:0X0806 (小端模式)
 	rt_uint16_t dlength;			//数据长度
@@ -141,7 +141,7 @@ __packed typedef struct
 	rt_uint16_t timeref;			//参考时间：0=UTC Time；1=GPS Time；
  	rt_uint8_t  cka;					//校验CK_A 							 	 
 	rt_uint8_t  ckb;					//校验CK_B							 	 
-}_ublox_cfg_rate; 
+}_ublox_cfg_rate;
 				 
 int NMEA_Str2num(rt_uint8_t *buf,rt_uint8_t*dx);
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf);
