@@ -15,6 +15,8 @@
 #include <stm32f4xx.h>
 #include "drv_common.h"
 #include "drv_gpio.h"
+#include "led.h"
+#include "key.h"
 
 #ifdef __cplusplus
 extern "C" {
