@@ -27,7 +27,7 @@
 
 #define A9G_NETDEV_NAME										"a9g"
 
-#define A9G_MODULE_SEND_MAX_SIZE					1000
+#define A9G_MODULE_SEND_MAX_SIZE					1024
 #define A9G_WAIT_CONNECT_TIME							5000
 #define	A9G_THREAD_STACK_SIZE							1024
 #define A9G_THREAD_PRIORITY								(RT_THREAD_PRIORITY_MAX/2)
@@ -51,11 +51,13 @@ static at_evt_cb_t at_evt_cb_set[] = {
         [AT_SOCKET_EVT_CLOSED] = NULL,
 };
 
+/*  */
 static int at_socket_event_send(uint32_t event)
 {
     return (int) rt_event_send(at_socket_event, event);
 }
 
+/*  */
 static int at_socket_event_recv(uint32_t event, uint32_t timeout, rt_uint8_t option)
 {
     int result = 0;
@@ -93,7 +95,6 @@ static int a9g_socket_close(int socket)
     }
 
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
-    cur_socket = socket;
 
     /* Clear socket close event */
     at_socket_event_recv(SET_EVENT(socket, A9G_EVNET_CLOSE_OK), 0, RT_EVENT_FLAG_OR);
@@ -165,8 +166,8 @@ __retry:
         switch (type)
         {
         case AT_SOCKET_TCP:
-            /* send AT commands(eg: AT+CIPSTART=0,"TCP","x.x.x.x", 1234) to connect TCP server */
-            if (at_exec_cmd(resp, "AT+CIPSTART=%d,\"TCP\",\"%s\",%d", socket, ip, port) < 0)
+            /* send AT commands(eg: AT+CIPSTART="TCP","x.x.x.x", 1234) to connect TCP server */
+            if (at_exec_cmd(resp, "AT+CIPSTART=\"TCP\",\"%s\",%d", ip, port) < 0)
             {
                 result = -RT_ERROR;
                 goto __exit;
@@ -174,7 +175,7 @@ __retry:
             break;
 
         case AT_SOCKET_UDP:
-            if (at_exec_cmd(resp, "AT+CIPSTART=%d,\"UDP\",\"%s\",%d", socket, ip, port) < 0)
+            if (at_exec_cmd(resp, "AT+CIPSTART=\"UDP\",\"%s\",%d", ip, port) < 0)
             {
                 result = -RT_ERROR;
                 goto __exit;
@@ -451,13 +452,14 @@ static void urc_connect_func(const char *data, rt_size_t size)
 
     RT_ASSERT(data && size);
 
-    sscanf(data, "%d,%*", &socket);
+    sscanf(data, "+CIPNUM:%d", &socket);
+		cur_socket = socket;
 
-    if (strstr(data, "CONNECT OK"))
+		if (strstr(data, "OK"))
     {
         at_socket_event_send(SET_EVENT(socket, A9G_EVENT_CONN_OK));
     }
-    else if (strstr(data, "CONNECT FAIL"))
+    else
     {
         at_socket_event_send(SET_EVENT(socket, A9G_EVENT_CONN_FAIL));
     }
@@ -467,11 +469,11 @@ static void urc_send_func(const char *data, rt_size_t size)
 {
     RT_ASSERT(data && size);
 
-    if (strstr(data, "SEND OK"))
+    if (strstr(data, "OK"))
     {
         at_socket_event_send(SET_EVENT(cur_socket, A9G_EVENT_SEND_OK));
     }
-    else if (strstr(data, "SEND FAIL"))
+    else if (strstr(data, "FAIL"))
     {
         at_socket_event_send(SET_EVENT(cur_socket, A9G_EVENT_SEND_FAIL));
     }
@@ -483,13 +485,13 @@ static void urc_close_func(const char *data, rt_size_t size)
 
     RT_ASSERT(data && size);
 
-    if (strstr(data, "CLOSE OK"))
+    if (strstr(data, "OK"))
     {
         at_socket_event_send(SET_EVENT(cur_socket, A9G_EVNET_CLOSE_OK));
     }
     else if (strstr(data, "CLOSED"))
     {
-        sscanf(data, "%d, CLOSED", &socket);
+				sscanf(data, "CLOSED:%d", &socket);
         /* notice the socket is disconnect by remote */
         if (at_evt_cb_set[AT_SOCKET_EVT_CLOSED])
         {
@@ -508,7 +510,7 @@ static void urc_recv_func(const char *data, rt_size_t size)
     RT_ASSERT(data && size);
 
     /* get the current socket and receive buffer size by receive data */
-    sscanf(data, "+RECEIVE,%d,%d:", &socket, (int *) &bfsz);
+    sscanf(data, "+CIPRCV,%d,%d:", &socket, (int *) &bfsz);
     /* get receive timeout by receive buffer length */
     timeout = bfsz;
 
@@ -561,16 +563,15 @@ static const struct at_urc urc_table[] = {
         {"RDY",         "\r\n",                 urc_func},
         {"",            ", CONNECT OK\r\n",     urc_connect_func},
         {"",            ", CONNECT FAIL\r\n",   urc_connect_func},
-        {"",            ", SEND OK\r\n",        urc_send_func},
-        {"",            ", SEND FAIL\r\n",      urc_send_func},
+        {"SEND OK",     "\r\n",                 urc_send_func},
+        {"SEND FAIL",   "\r\n",                 urc_send_func},
         {"",            ", CLOSE OK\r\n",       urc_close_func},
         {"",            ", CLOSED\r\n",         urc_close_func},
-        {"+RECEIVE,",   "\r\n",                 urc_recv_func},
+        {"+CIPRCV:",   "\r\n",                 urc_recv_func},
 };
 
 #ifdef AT_USING_A9G_GPS
 #include "gps.h"
-#include "minmea.h"
 
 //从buf里面得到第cx个逗号所在的位置
 //返回值:0~0XFE,代表逗号所在位置的偏移.
@@ -783,11 +784,31 @@ void NMEA_GNVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 //buf:接收到的GPS数据缓冲区首地址
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
-    NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
-    NMEA_GNGGA_Analysis(gpsx,buf);	//GNGGA解析
-    NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
-    NMEA_GNRMC_Analysis(gpsx,buf);	//GPRMC解析
-    NMEA_GNVTG_Analysis(gpsx,buf);	//GPVTG解析
+		if (strstr((const char *)buf, "$GPGSV"))
+		{
+//				rt_kprintf("analysis GPGSV\n");
+				NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
+		}
+		else if (strstr((const char *)buf, "$GNGGA"))
+		{
+//				rt_kprintf("analysis GNGGA\n");
+				NMEA_GNGGA_Analysis(gpsx,buf);	//GNGGA解析
+		}
+		else if (strstr((const char *)buf, "$GPGSA"))
+		{
+//				rt_kprintf("analysis GPGSA\n");
+				NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
+		}
+		else if (strstr((const char *)buf, "GNRMC"))
+		{
+//				rt_kprintf("analysis GNRMC\n");
+				NMEA_GNRMC_Analysis(gpsx,buf);	//GNRMC解析
+		}
+    else if (strstr((const char *)buf, "$GNVTG"))
+		{
+//				rt_kprintf("analysis GNVTG\n");
+				NMEA_GNVTG_Analysis(gpsx,buf);	//GNVTG解析
+		}
 }
 
 /* 串口接收事件标志 */
@@ -815,8 +836,8 @@ static rt_uint8_t uart_getchar(void)
     /* 读取1字节数据 */
     while (rt_device_read(uart_device, 0, &ch, 1) != 1)
     {
-         /* 接收事件 */
-        rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
+				/* 接收事件 */
+				rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
     }
 
     return ch;
@@ -847,7 +868,7 @@ static rt_err_t uart_open(rt_device_t device)
     rt_err_t res;
 
     if (device != RT_NULL)
-    {      
+    {
         res = rt_device_set_rx_indicate(device, uart_intput);
         /* 检查返回值 */
         if (res != RT_EOK)
@@ -892,26 +913,26 @@ static void data_read(uint8_t* buff, int len)
     buff[count] = 0;
 }
 
-nmea_msg gpsx;
+static nmea_msg gps_data;
 void gps_thread_entry(void *parameter)
 {
-    uint8_t line[MINMEA_MAX_LENGTH];
+    uint8_t line[GPS_DEVICE_RECV_BUFF_LEN];
 
     while(1)
     {
-        data_read(line, MINMEA_MAX_LENGTH);
+        data_read(line, GPS_DEVICE_RECV_BUFF_LEN);
 			
-				rt_kprintf("%s", line);
+//				rt_kprintf("%s", line);
 				
-				GPS_Analysis(&gpsx, line);
+				GPS_Analysis(&gps_data, line);
 				
-//				rt_kprintf("gps latitude: %d %1c\n", gpsx.latitude /= 100000, gpsx.nshemi);
-//				rt_kprintf("gps longitude: %d %1c\n", gpsx.longitude /= 100000, gpsx.ewhemi);
+//				rt_kprintf("gps latitude: %d %1c\n", gps_data.latitude /= 100000, gps_data.nshemi);
+//				rt_kprintf("gps longitude: %d %1c\n", gps_data.longitude /= 100000, gps_data.ewhemi);
     }
 }
 
 rt_err_t gps_init(void)
-{ 
+{
     rt_thread_t tid;
     
     /* 查找系统中的串口设备 */
@@ -945,13 +966,13 @@ rt_err_t gps_init(void)
         rt_kprintf("uart open error.\n");
         return RT_ERROR;
     }
-     if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
+    if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
     {
         rt_kprintf("uart config failed.\n");
         return RT_ERROR;
     }
 
-    tid = rt_thread_create("gps", 
+    tid = rt_thread_create("gps_recive", 
                             gps_thread_entry,
                             RT_NULL,
                             2048,
@@ -966,7 +987,7 @@ rt_err_t gps_init(void)
 
     return RT_EOK;
 }
-MSH_CMD_EXPORT(gps_init,APP INIT);
+//MSH_CMD_EXPORT(gps_init,APP INIT);
 
 
 #endif
@@ -1014,9 +1035,7 @@ static void a9g_init_thread_entry(void *parameter)
     {
         result = RT_EOK;
         rt_memset(parsed_data, 0, sizeof(parsed_data));
-        rt_thread_mdelay(500);
-        rt_thread_mdelay(2000);
-        resp = at_create_resp(128, 0, rt_tick_from_millisecond(300));
+        resp = at_create_resp(128, 0, rt_tick_from_millisecond(500));
         if (!resp)
         {
             LOG_E("No memory for response structure!");
@@ -1024,6 +1043,7 @@ static void a9g_init_thread_entry(void *parameter)
             goto __exit;
         }
         LOG_D("Start initializing the A9G module");
+        rt_thread_mdelay(5000);
         /* wait A9G startup finish */
         if (at_client_wait_connect(A9G_WAIT_CONNECT_TIME))
         {
@@ -1115,19 +1135,19 @@ static void a9g_init_thread_entry(void *parameter)
         }
 				
 				/* Set GPRS attachment */
-				AT_SEND_CMD(resp, 2, 300, "AT+CGATT=1");
+				AT_SEND_CMD(resp, 0, 300, "AT+CGATT=1");
 				rt_thread_mdelay(10);
 				
 				/* Define the PDP context */
-				AT_SEND_CMD(resp, 2, 300, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
+				AT_SEND_CMD(resp, 0, 300, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
 				rt_thread_mdelay(10);
 				
 				/* Set PDP context activation */
-				AT_SEND_CMD(resp, 2, 300, "AT+CGACT=1,1");
+				AT_SEND_CMD(resp, 0, 300, "AT+CGACT=1,1");
 				rt_thread_mdelay(10);
 				
         /* Set to multiple connections */
-        AT_SEND_CMD(resp, 0, 300, "AT+CIPMUX?");
+        AT_SEND_CMD(resp, 1, 300, "AT+CIPMUX?");
         at_resp_parse_line_args_by_kw(resp, "+CIPMUX:", "+CIPMUX: %d", &qimux);
         if (qimux == 0)
         {
@@ -1177,7 +1197,7 @@ static void a9g_init_thread_entry(void *parameter)
 
     /* set network interface device status and address information */
     a9g_netdev_set_info(netdev_get_by_name(A9G_NETDEV_NAME));
-//    a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
+    a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
 }
 
 /* init for A9G */
@@ -1197,7 +1217,7 @@ int a9g_net_init(void)
     }
 #ifdef AT_USING_A9G_GPS
 		
-//		gps_init(RT_NULL);
+		gps_init();
 		
 #endif
 		
@@ -1207,7 +1227,7 @@ int a9g_net_init(void)
 		
 #ifdef AT_USING_A9G_GPS
 		
-		gps_init(RT_NULL);
+		gps_init();
 		
 #endif
 		
@@ -1251,9 +1271,9 @@ static int a9g_netdev_set_info(struct netdev *netdev)
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
 
     /* set network interface device status */
-    netdev_low_level_set_status(netdev, RT_TRUE);
-    netdev_low_level_set_link_status(netdev, RT_TRUE);
-    netdev_low_level_set_dhcp_status(netdev, RT_TRUE);
+//    netdev_low_level_set_status(netdev, RT_TRUE);
+//    netdev_low_level_set_link_status(netdev, RT_TRUE);
+//    netdev_low_level_set_dhcp_status(netdev, RT_TRUE);
 
     resp = at_create_resp(A9G_IEMI_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
     if (resp == RT_NULL)
@@ -1306,8 +1326,20 @@ static int a9g_netdev_set_info(struct netdev *netdev)
     {
         #define IP_ADDR_SIZE_MAX    16
         char ipaddr[IP_ADDR_SIZE_MAX] = {0};
-        
-        at_resp_set_info(resp, A9G_IPADDR_RESP_SIZE, 2, A9G_INFO_RESP_TIMO);
+				
+				at_resp_set_info(resp, A9G_IPADDR_RESP_SIZE, 2, A9G_INFO_RESP_TIMO);
+				
+				/* Set GPRS attachment */
+				AT_SEND_CMD(resp, 0, 300, "AT+CGATT=1");
+				rt_thread_mdelay(10);
+				
+				/* Define the PDP context */
+				AT_SEND_CMD(resp, 0, 300, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
+				rt_thread_mdelay(10);
+				
+				/* Set PDP context activation */
+				AT_SEND_CMD(resp, 0, 300, "AT+CGACT=1,1");
+				rt_thread_mdelay(10);
 
         /* send "AT+CIFSR" commond to get IP address */
         if (at_exec_cmd(resp, "AT+CIFSR") < 0)
@@ -1559,6 +1591,53 @@ static int a9g_netdev_add(const char *netdev_name)
 
     return netdev_register(netdev, netdev_name, RT_NULL);
 }
+
+/* A9G client server thread */
+static void a9g_client_thread_entry(void *parameter)
+{
+#define CLIENT_RETRY			10
+#define CLIENT_SOCKET			0
+#define CLIENT_IP					"47.100.28.6"
+#define CLIENT_PORT				8086
+		
+		at_client_t client = RT_NULL;
+		
+		const char str[] = "hello RT-Thread!";
+	
+		client = at_client_get(AT_DEVICE_NAME);
+		
+		a9g_socket_connect(CLIENT_SOCKET, CLIENT_IP, CLIENT_PORT, AT_SOCKET_TCP, RT_TRUE);
+		
+		a9g_socket_send(CLIENT_SOCKET, str, sizeof(str), AT_SOCKET_TCP);
+		
+		a9g_socket_close(CLIENT_SOCKET);
+}
+
+
+int a9g_client_init(void)
+{
+#define A9G_CLIENT_THREAD_PRIORITY         25
+#define A9G_CLIENT_THREAD_STACK_SIZE       512
+#define A9G_CLIENT_THREAD_TIMESLICE        500
+		
+		rt_thread_t tid;
+		
+		tid = rt_thread_create("a9g_client_server", 							/* 线程名称 */
+														a9g_client_thread_entry,					/* 线程入口函数 */
+														RT_NULL, 													/**/
+														A9G_CLIENT_THREAD_STACK_SIZE, 		/* 线程栈内存 */
+														A9G_CLIENT_THREAD_PRIORITY, 			/* 线程优先级 */
+														A9G_CLIENT_THREAD_TIMESLICE);			/* 线程轮询时间 */
+		
+		if(tid !=RT_NULL)
+		{
+				rt_thread_startup(tid);
+				return RT_EOK;
+		}
+		else 
+			return RT_ERROR;
+}
+MSH_CMD_EXPORT(a9g_client_init, client test);
 
 static int at_socket_device_init(void)
 {
