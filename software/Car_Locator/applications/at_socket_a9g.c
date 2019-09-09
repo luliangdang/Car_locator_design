@@ -922,7 +922,7 @@ void gps_thread_entry(void *parameter)
     {
         data_read(line, GPS_DEVICE_RECV_BUFF_LEN);
 			
-//				rt_kprintf("%s", line);
+				rt_kprintf("%s", line);
 				
 				GPS_Analysis(&gps_data, line);
 				
@@ -982,12 +982,12 @@ rt_err_t gps_init(void)
     {
         return RT_ERROR;
     }
-
+		
     rt_thread_startup(tid);
 
     return RT_EOK;
 }
-//MSH_CMD_EXPORT(gps_init,APP INIT);
+MSH_CMD_EXPORT(gps_init,APP INIT);
 
 
 #endif
@@ -1217,7 +1217,7 @@ int a9g_net_init(void)
     }
 #ifdef AT_USING_A9G_GPS
 		
-		gps_init();
+//		gps_init();
 		
 #endif
 		
@@ -1606,11 +1606,16 @@ static void a9g_client_thread_entry(void *parameter)
 	
 		client = at_client_get(AT_DEVICE_NAME);
 		
-		a9g_socket_connect(CLIENT_SOCKET, CLIENT_IP, CLIENT_PORT, AT_SOCKET_TCP, RT_TRUE);
+		while(1)
+		{
+				a9g_socket_connect(CLIENT_SOCKET, CLIENT_IP, CLIENT_PORT, AT_SOCKET_TCP, RT_TRUE);
 		
-		a9g_socket_send(CLIENT_SOCKET, str, sizeof(str), AT_SOCKET_TCP);
-		
-		a9g_socket_close(CLIENT_SOCKET);
+				a9g_socket_send(CLIENT_SOCKET, str, sizeof(str), AT_SOCKET_TCP);
+				
+				a9g_socket_close(CLIENT_SOCKET);
+				
+				rt_thread_mdelay(1000);
+		}
 }
 
 

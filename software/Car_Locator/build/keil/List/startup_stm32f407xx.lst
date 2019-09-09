@@ -880,8 +880,8 @@ ARM Macro Assembler    Page 14
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\build\keil\obj\startup_stm32f407xx.d -o.\build\keil\obj\start
-up_stm32f407xx.o -I.\RTE\_rt-thread -ID:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.
-14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include -ID:\Keil_v5\ARM\CMSIS\Include -
+up_stm32f407xx.o -I.\RTE\_rt-thread -ID:\Keil_v5\Arm\Packs\Keil\STM32F4xx_DFP\2
+.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include -ID:\Keil_v5\ARM\CMSIS\Include -
 -predefine="__UVISION_VERSION SETA 528" --predefine="STM32F407xx SETA 1" --list
 =.\build\keil\list\startup_stm32f407xx.lst libraries\STM32F4xx_HAL\CMSIS\Device
 \ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
