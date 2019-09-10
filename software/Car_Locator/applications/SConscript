@@ -9,6 +9,7 @@ key.c
 led.c
 at_socket_a9g.c
 minmea.c
+client_server.c
 """)
 
 
