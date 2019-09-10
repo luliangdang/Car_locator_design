@@ -3,5 +3,15 @@
   "path": "/packages/iot/at_device", 
   "ver": "v1.6.0", 
   "name": "AT_DEVICE"
+ }, 
+ {
+  "path": "/packages/iot/iot_cloud/ali-iotkit", 
+  "ver": "v2.0.4", 
+  "name": "ALI_IOTKIT"
+ }, 
+ {
+  "path": "/packages/security/mbedtls", 
+  "ver": "v2.7.10", 
+  "name": "MBEDTLS"
  }
 ]

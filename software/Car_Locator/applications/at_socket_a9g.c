@@ -27,7 +27,7 @@
 
 #define A9G_NETDEV_NAME										"a9g"
 
-#define A9G_MODULE_SEND_MAX_SIZE					1000
+#define A9G_MODULE_SEND_MAX_SIZE					1024
 #define A9G_WAIT_CONNECT_TIME							5000
 #define	A9G_THREAD_STACK_SIZE							1024
 #define A9G_THREAD_PRIORITY								(RT_THREAD_PRIORITY_MAX/2)
@@ -51,11 +51,13 @@ static at_evt_cb_t at_evt_cb_set[] = {
         [AT_SOCKET_EVT_CLOSED] = NULL,
 };
 
+/*  */
 static int at_socket_event_send(uint32_t event)
 {
     return (int) rt_event_send(at_socket_event, event);
 }
 
+/*  */
 static int at_socket_event_recv(uint32_t event, uint32_t timeout, rt_uint8_t option)
 {
     int result = 0;
@@ -85,7 +87,7 @@ static int a9g_socket_close(int socket)
     int result = 0;
     at_response_t resp = RT_NULL;
 
-    resp = at_create_resp(128, 0, RT_TICK_PER_SECOND);
+    resp = at_create_resp(512, 0, RT_TICK_PER_SECOND);
     if (!resp)
     {
         LOG_E("No memory for response structure!");
@@ -93,27 +95,22 @@ static int a9g_socket_close(int socket)
     }
 
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
-    cur_socket = socket;
-
+		
     /* Clear socket close event */
     at_socket_event_recv(SET_EVENT(socket, A9G_EVNET_CLOSE_OK), 0, RT_EVENT_FLAG_OR);
-
+		
     if (at_exec_cmd(resp, "AT+CIPCLOSE=%d", socket) < 0)
     {
         result = -RT_ERROR;
         goto __exit;
     }
 
-    if (at_socket_event_recv(SET_EVENT(socket, A9G_EVNET_CLOSE_OK), rt_tick_from_millisecond(300*3), RT_EVENT_FLAG_AND) < 0)
-    {
-        LOG_E("socket (%d) close failed, wait close OK timeout.", socket);
-        result = -RT_ETIMEOUT;
-        goto __exit;
-    }
+		LOG_I("socket (%d) close success.", socket);
 
 __exit:
     rt_mutex_release(at_event_lock);
-
+//		at_exec_cmd(resp, "ATE0");
+		
     if (resp)
     {
         at_delete_resp(resp);
@@ -145,7 +142,7 @@ static int a9g_socket_connect(int socket, char *ip, int32_t port, enum at_socket
     RT_ASSERT(ip);
     RT_ASSERT(port >= 0);
 
-    resp = at_create_resp(128, 0, 5 * RT_TICK_PER_SECOND);
+    resp = at_create_resp(512, 3, 5 * RT_TICK_PER_SECOND);
     if (!resp)
     {
         LOG_E("No memory for response structure!");
@@ -154,19 +151,21 @@ static int a9g_socket_connect(int socket, char *ip, int32_t port, enum at_socket
 
     /* lock AT socket connect */
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
-
+		
+		/* lock AT socket connect contrl */
+//		rt_event_send(at_contrl_event, A9G_EVENT_SEND_LOCK);
 __retry:
-
+		
     /* Clear socket connect event */
-    at_socket_event_recv(SET_EVENT(socket, A9G_EVENT_CONN_OK | A9G_EVENT_CONN_FAIL), 0, RT_EVENT_FLAG_OR);
+//    at_socket_event_recv(SET_EVENT(socket, A9G_EVENT_CONN_OK | A9G_EVENT_CONN_FAIL), 0, RT_EVENT_FLAG_OR);
 
     if (is_client)
     {
         switch (type)
         {
         case AT_SOCKET_TCP:
-            /* send AT commands(eg: AT+CIPSTART=0,"TCP","x.x.x.x", 1234) to connect TCP server */
-            if (at_exec_cmd(resp, "AT+CIPSTART=%d,\"TCP\",\"%s\",%d", socket, ip, port) < 0)
+            /* send AT commands(eg: AT+CIPSTART="TCP","x.x.x.x", 1234) to connect TCP server */
+            if (at_exec_cmd(resp, "AT+CIPSTART=\"TCP\",\"%s\",%d", ip, port) < 0)
             {
                 result = -RT_ERROR;
                 goto __exit;
@@ -174,7 +173,7 @@ __retry:
             break;
 
         case AT_SOCKET_UDP:
-            if (at_exec_cmd(resp, "AT+CIPSTART=%d,\"UDP\",\"%s\",%d", socket, ip, port) < 0)
+            if (at_exec_cmd(resp, "AT+CIPSTART=\"UDP\",\"%s\",%d", ip, port) < 0)
             {
                 result = -RT_ERROR;
                 goto __exit;
@@ -187,44 +186,28 @@ __retry:
             goto __exit;
         }
     }
-
-    /* waiting result event from AT URC, the device default connection timeout is 75 seconds, but it set to 10 seconds is convenient to use.*/
-    if (at_socket_event_recv(SET_EVENT(socket, 0), 10 * RT_TICK_PER_SECOND, RT_EVENT_FLAG_OR) < 0)
-    {
-        LOG_E("socket (%d) connect failed, wait connect result timeout.", socket);
-        result = -RT_ETIMEOUT;
-        goto __exit;
-    }
-    /* waiting OK or failed result */
-    if ((event_result = at_socket_event_recv(A9G_EVENT_CONN_OK | A9G_EVENT_CONN_FAIL, 1 * RT_TICK_PER_SECOND,
-            RT_EVENT_FLAG_OR)) < 0)
-    {
-        LOG_E("socket (%d) connect failed, wait connect OK|FAIL timeout.", socket);
-        result = -RT_ETIMEOUT;
-        goto __exit;
-    }
-    /* check result */
-    if (event_result & A9G_EVENT_CONN_FAIL)
-    {
-        if (!retryed)
-        {
-            LOG_E("socket (%d) connect failed, maybe the socket was not be closed at the last time and now will retry.", socket);
-            if (a9g_socket_close(socket) < 0)
-            {
-                goto __exit;
-            }
-            retryed = RT_TRUE;
-            goto __retry;
-        }
+		
+		rt_thread_delay(500);
+		rt_kprintf("%d\n", resp->line_counts);
+		rt_kprintf("%s\n", resp->buf);
+		/* check the socket connect result */
+		if (at_resp_parse_line_args_by_kw(resp,"+CIPNUM", "+CIPNUM:%d", socket) == RT_NULL)
+		{
+				if (strstr(resp->buf, "+CIPNUM"))
+				{
+						rt_kprintf("laozizhaodaolede!!!\n");
+				}
         LOG_E("socket (%d) connect failed, failed to establish a connection.", socket);
+//				a9g_socket_close(socket);
         result = -RT_ERROR;
         goto __exit;
-    }
+		}
+		LOG_I("socket (%d) connect success.", socket);
 
 __exit:
     /* unlock AT socket connect */
     rt_mutex_release(at_event_lock);
-
+		
     if (resp)
     {
         at_delete_resp(resp);
@@ -253,8 +236,10 @@ static int a9g_socket_send(int socket, const char *buff, size_t bfsz, enum at_so
     size_t cur_pkt_size = 0, sent_size = 0;
 
     RT_ASSERT(buff);
+		
+		bfsz -= 2;
 
-    resp = at_create_resp(128, 2, 5 * RT_TICK_PER_SECOND);
+    resp = at_create_resp(512, 1, 5 * RT_TICK_PER_SECOND);
     if (!resp)
     {
         LOG_E("No memory for response structure!");
@@ -297,29 +282,6 @@ static int a9g_socket_send(int socket, const char *buff, size_t bfsz, enum at_so
             goto __exit;
         }
 
-        /* waiting result event from AT URC */
-        if (at_socket_event_recv(SET_EVENT(socket, 0), 10 * RT_TICK_PER_SECOND, RT_EVENT_FLAG_OR) < 0)
-        {
-            LOG_E("socket (%d) send failed, wait connect result timeout.", socket);
-            result = -RT_ETIMEOUT;
-            goto __exit;
-        }
-        /* waiting OK or failed result */
-        if ((event_result = at_socket_event_recv(A9G_EVENT_SEND_OK | A9G_EVENT_SEND_FAIL, 5 * RT_TICK_PER_SECOND,
-                RT_EVENT_FLAG_OR)) < 0)
-        {
-            LOG_E("socket (%d) send failed, wait connect OK|FAIL timeout.", socket);
-            result = -RT_ETIMEOUT;
-            goto __exit;
-        }
-        /* check result */
-        if (event_result & A9G_EVENT_SEND_FAIL)
-        {
-            LOG_E("socket (%d) send failed, return failed.", socket);
-            result = -RT_ERROR;
-            goto __exit;
-        }
-
         if (type == AT_SOCKET_TCP)
         {
             //cur_pkt_size = cur_send_bfsz;
@@ -327,7 +289,17 @@ static int a9g_socket_send(int socket, const char *buff, size_t bfsz, enum at_so
 
         sent_size += cur_pkt_size;
     }
-
+		
+		rt_thread_delay(500);
+		rt_kprintf("%d\n", resp->line_counts);
+		rt_kprintf("%s\n", resp->buf);
+		/* check the socket send result */
+		if (at_resp_get_line(resp, 1) == RT_NULL )
+		{
+				LOG_E("socket (%d) send failed, return failed.", socket);
+				goto __exit;
+		}
+		LOG_I("socket (%d) send success.", socket);
 
 __exit:
     /* reset the end sign for data conflict */
@@ -414,7 +386,7 @@ static int a9g_domain_resolve(const char *name, char ip[16])
         {
             strncpy(ip, recv_ip, 15);
             ip[15] = '\0';
-            //LOG_I("DNS IP:%s",ip);
+            LOG_I("DNS IP:%s",ip);
             break;
         }
     }
@@ -451,13 +423,15 @@ static void urc_connect_func(const char *data, rt_size_t size)
 
     RT_ASSERT(data && size);
 
-    sscanf(data, "%d,%*", &socket);
-
-    if (strstr(data, "CONNECT OK"))
+		if (strstr(data, "OK"))
     {
         at_socket_event_send(SET_EVENT(socket, A9G_EVENT_CONN_OK));
+				
+				sscanf(data, "+CIPNUM:%d", &socket);
+				
+				cur_socket = socket;
     }
-    else if (strstr(data, "CONNECT FAIL"))
+    else
     {
         at_socket_event_send(SET_EVENT(socket, A9G_EVENT_CONN_FAIL));
     }
@@ -466,12 +440,14 @@ static void urc_connect_func(const char *data, rt_size_t size)
 static void urc_send_func(const char *data, rt_size_t size)
 {
     RT_ASSERT(data && size);
+		
+		LOG_I("send data");
 
-    if (strstr(data, "SEND OK"))
+    if (strstr(data, "OK"))
     {
         at_socket_event_send(SET_EVENT(cur_socket, A9G_EVENT_SEND_OK));
     }
-    else if (strstr(data, "SEND FAIL"))
+    else if (strstr(data, "FAIL"))
     {
         at_socket_event_send(SET_EVENT(cur_socket, A9G_EVENT_SEND_FAIL));
     }
@@ -483,13 +459,13 @@ static void urc_close_func(const char *data, rt_size_t size)
 
     RT_ASSERT(data && size);
 
-    if (strstr(data, "CLOSE OK"))
+    if (strstr(data, "OK"))
     {
         at_socket_event_send(SET_EVENT(cur_socket, A9G_EVNET_CLOSE_OK));
     }
     else if (strstr(data, "CLOSED"))
     {
-        sscanf(data, "%d, CLOSED", &socket);
+				sscanf(data, "CLOSED:%d", &socket);
         /* notice the socket is disconnect by remote */
         if (at_evt_cb_set[AT_SOCKET_EVT_CLOSED])
         {
@@ -503,45 +479,28 @@ static void urc_recv_func(const char *data, rt_size_t size)
     int socket = 0;
     rt_size_t bfsz = 0, temp_size = 0;
     rt_int32_t timeout;
-    char *recv_buf = RT_NULL, temp[8];
+		const char *tdata = data;
+		char recv_buf[AT_DEVICE_RECV_BUFF_LEN];
+		at_client_t client = RT_NULL;
+		rt_err_t result = RT_EOK;
 
     RT_ASSERT(data && size);
+		
+		LOG_I("get some recive from server.\n%s", data);
 
     /* get the current socket and receive buffer size by receive data */
-    sscanf(data, "+RECEIVE,%d,%d:", &socket, (int *) &bfsz);
-    /* get receive timeout by receive buffer length */
-    timeout = bfsz;
-
+    sscanf(tdata, "+CIPRCV,%d,%d:", &socket, (int *) &bfsz);
+		
     if (socket < 0 || bfsz == 0)
         return;
-
-    recv_buf = rt_calloc(1, bfsz);
-    if (!recv_buf)
-    {
-        LOG_E("no memory for URC receive buffer (%d)!", bfsz);
-        /* read and clean the coming data */
-        while (temp_size < bfsz)
-        {
-            if (bfsz - temp_size > sizeof(temp))
-            {
-                at_client_recv(temp, sizeof(temp), timeout);
-            }
-            else
-            {
-                at_client_recv(temp, bfsz - temp_size, timeout);
-            }
-            temp_size += sizeof(temp);
-        }
-        return;
-    }
-
-    /* sync receive data */
-    if (at_client_recv(recv_buf, bfsz, timeout) != bfsz)
-    {
-        LOG_E("receive size(%d) data failed!", bfsz);
-        rt_free(recv_buf);
-        return;
-    }
+		
+		while(*tdata != ':')
+		{
+				tdata++;
+		}
+		tdata++;
+		strcpy(recv_buf, tdata);
+		rt_kprintf("%s\n", recv_buf);
 
     /* notice the receive buffer and buffer size */
     if (at_evt_cb_set[AT_SOCKET_EVT_RECV])
@@ -552,25 +511,27 @@ static void urc_recv_func(const char *data, rt_size_t size)
 
 static void urc_func(const char *data, rt_size_t size)
 {
+		rt_uint32_t recved;
+		
     RT_ASSERT(data);
 
     LOG_I("URC data : %.*s", size, data);
+		
 }
 
 static const struct at_urc urc_table[] = {
-        {"RDY",         "\r\n",                 urc_func},
-        {"",            ", CONNECT OK\r\n",     urc_connect_func},
-        {"",            ", CONNECT FAIL\r\n",   urc_connect_func},
-        {"",            ", SEND OK\r\n",        urc_send_func},
-        {"",            ", SEND FAIL\r\n",      urc_send_func},
-        {"",            ", CLOSE OK\r\n",       urc_close_func},
-        {"",            ", CLOSED\r\n",         urc_close_func},
-        {"+RECEIVE,",   "\r\n",                 urc_recv_func},
+//        {"",       	        "OK\r\n",               urc_func},
+//				{"+CIPNUM",         "CONNECT OK\r\nok\r\n",         urc_connect_func},
+//        {"",                ", CONNECT FAIL\r\n",   urc_connect_func},
+//        {">",     			    "OK\r\n",               urc_send_func},
+//        {"FAIL",   			    "\r\n",                 urc_send_func},
+//        {"",                ", CLOSE OK\r\n",        urc_close_func},
+//        {"",                ", CLOSED\r\n",          urc_close_func},
+        {"+CIPRCV,",        "\r\n",                 	 urc_recv_func},
 };
 
 #ifdef AT_USING_A9G_GPS
 #include "gps.h"
-#include "minmea.h"
 
 //从buf里面得到第cx个逗号所在的位置
 //返回值:0~0XFE,代表逗号所在位置的偏移.
@@ -783,11 +744,31 @@ void NMEA_GNVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 //buf:接收到的GPS数据缓冲区首地址
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
-    NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
-    NMEA_GNGGA_Analysis(gpsx,buf);	//GNGGA解析
-    NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
-    NMEA_GNRMC_Analysis(gpsx,buf);	//GPRMC解析
-    NMEA_GNVTG_Analysis(gpsx,buf);	//GPVTG解析
+		if (strstr((const char *)buf, "$GPGSV"))
+		{
+//				rt_kprintf("analysis GPGSV\n");
+				NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
+		}
+		else if (strstr((const char *)buf, "$GNGGA"))
+		{
+//				rt_kprintf("analysis GNGGA\n");
+				NMEA_GNGGA_Analysis(gpsx,buf);	//GNGGA解析
+		}
+		else if (strstr((const char *)buf, "$GPGSA"))
+		{
+//				rt_kprintf("analysis GPGSA\n");
+				NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
+		}
+		else if (strstr((const char *)buf, "GNRMC"))
+		{
+//				rt_kprintf("analysis GNRMC\n");
+				NMEA_GNRMC_Analysis(gpsx,buf);	//GNRMC解析
+		}
+    else if (strstr((const char *)buf, "$GNVTG"))
+		{
+//				rt_kprintf("analysis GNVTG\n");
+				NMEA_GNVTG_Analysis(gpsx,buf);	//GNVTG解析
+		}
 }
 
 /* 串口接收事件标志 */
@@ -807,6 +788,7 @@ static rt_err_t uart_intput(rt_device_t dev, rt_size_t size)
     return RT_EOK;
 }
 
+/* uart device get char */
 static rt_uint8_t uart_getchar(void)
 {
     rt_uint32_t e;
@@ -815,12 +797,13 @@ static rt_uint8_t uart_getchar(void)
     /* 读取1字节数据 */
     while (rt_device_read(uart_device, 0, &ch, 1) != 1)
     {
-         /* 接收事件 */
-        rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
+				/* 接收事件 */
+				rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
     }
 
     return ch;
 }
+
 
 static void uart_putchar(const rt_uint8_t c)
 {
@@ -842,12 +825,13 @@ static void uart_putstring(const rt_uint8_t *s)
     }
 }
 
+/* open the uart device */
 static rt_err_t uart_open(rt_device_t device)
 {
     rt_err_t res;
 
     if (device != RT_NULL)
-    {      
+    {
         res = rt_device_set_rx_indicate(device, uart_intput);
         /* 检查返回值 */
         if (res != RT_EOK)
@@ -877,6 +861,7 @@ static rt_err_t uart_open(rt_device_t device)
     }
 }
 
+/* read device data */
 static void data_read(uint8_t* buff, int len)
 {
     rt_uint8_t uart_rx_byte;
@@ -892,26 +877,27 @@ static void data_read(uint8_t* buff, int len)
     buff[count] = 0;
 }
 
-nmea_msg gpsx;
+static nmea_msg gps_data;
 void gps_thread_entry(void *parameter)
 {
-    uint8_t line[MINMEA_MAX_LENGTH];
+    uint8_t line[GPS_DEVICE_RECV_BUFF_LEN];
 
     while(1)
     {
-        data_read(line, MINMEA_MAX_LENGTH);
+        data_read(line, GPS_DEVICE_RECV_BUFF_LEN);
 			
-				rt_kprintf("%s", line);
+//				rt_kprintf("%s", line);
 				
-				GPS_Analysis(&gpsx, line);
+				GPS_Analysis(&gps_data, line);
 				
-//				rt_kprintf("gps latitude: %d %1c\n", gpsx.latitude /= 100000, gpsx.nshemi);
-//				rt_kprintf("gps longitude: %d %1c\n", gpsx.longitude /= 100000, gpsx.ewhemi);
+//				rt_kprintf("gps latitude: %d %1c\n", gps_data.latitude /= 100000, gps_data.nshemi);
+//				rt_kprintf("gps longitude: %d %1c\n", gps_data.longitude /= 100000, gps_data.ewhemi);
     }
 }
 
+/* gps port initial */
 rt_err_t gps_init(void)
-{ 
+{
     rt_thread_t tid;
     
     /* 查找系统中的串口设备 */
@@ -945,13 +931,13 @@ rt_err_t gps_init(void)
         rt_kprintf("uart open error.\n");
         return RT_ERROR;
     }
-     if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
+    if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
     {
         rt_kprintf("uart config failed.\n");
         return RT_ERROR;
     }
 
-    tid = rt_thread_create("gps", 
+    tid = rt_thread_create("gps_recive", 
                             gps_thread_entry,
                             RT_NULL,
                             2048,
@@ -961,20 +947,18 @@ rt_err_t gps_init(void)
     {
         return RT_ERROR;
     }
-
+		
     rt_thread_startup(tid);
 
     return RT_EOK;
 }
 MSH_CMD_EXPORT(gps_init,APP INIT);
-
-
-#endif
+#endif /* AT_USING_A9G_GPS */
 
 #define AT_SEND_CMD(resp, resp_line, timeout, cmd)                                                              \
     do                                                                                                          \
     {                                                                                                           \
-        if (at_exec_cmd(at_resp_set_info(resp, 128, resp_line, rt_tick_from_millisecond(timeout)), cmd) < 0)    \
+        if (at_exec_cmd(at_resp_set_info(resp, 512, resp_line, rt_tick_from_millisecond(timeout)), cmd) < 0)    \
         {                                                                                                       \
             result = -RT_ERROR;                                                                                 \
             goto __exit;                                                                                        \
@@ -990,7 +974,7 @@ static int a9g_reset(void)
 		rt_err_t result = RT_EOK;
 		at_response_t resp = RT_NULL;
 		
-		at_exec_cmd(at_resp_set_info(resp, 128, 0, rt_tick_from_millisecond(300)), "AT+RST=1");
+		at_exec_cmd(at_resp_set_info(resp, 512, 0, rt_tick_from_millisecond(300)), "AT+RST=1");
 		
 		return result;
 }
@@ -1007,6 +991,7 @@ static void a9g_init_thread_entry(void *parameter)
     int i, qimux;
     char parsed_data[10];
     rt_err_t result = RT_EOK;
+		at_client_t client = RT_NULL;
 
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
 
@@ -1014,9 +999,7 @@ static void a9g_init_thread_entry(void *parameter)
     {
         result = RT_EOK;
         rt_memset(parsed_data, 0, sizeof(parsed_data));
-        rt_thread_mdelay(500);
-        rt_thread_mdelay(2000);
-        resp = at_create_resp(128, 0, rt_tick_from_millisecond(300));
+        resp = at_create_resp(128, 0, rt_tick_from_millisecond(500));
         if (!resp)
         {
             LOG_E("No memory for response structure!");
@@ -1024,9 +1007,13 @@ static void a9g_init_thread_entry(void *parameter)
             goto __exit;
         }
         LOG_D("Start initializing the A9G module");
+				
+        rt_thread_mdelay(5000);
+				
         /* wait A9G startup finish */
         if (at_client_wait_connect(A9G_WAIT_CONNECT_TIME))
         {
+						a9g_reset();
             result = -RT_ETIMEOUT;
             goto __exit;
         }
@@ -1043,9 +1030,9 @@ static void a9g_init_thread_entry(void *parameter)
 				}
 				
         /* disable echo */
-        AT_SEND_CMD(resp, 0, 300, "ATE0");
+        AT_SEND_CMD(resp, 0, 500, "ATE0");
         /* get module version */
-        AT_SEND_CMD(resp, 0, 300, "ATI");
+        AT_SEND_CMD(resp, 0, 500, "ATI");
         /* show module version */
         for (i = 0; i < (int)resp->line_counts - 1; i++)
         {
@@ -1073,12 +1060,12 @@ static void a9g_init_thread_entry(void *parameter)
         /* waiting for dirty data to be digested */
         rt_thread_mdelay(10);
 
-				AT_SEND_CMD(resp, 0, 300, "AT+CREG=1");
+				AT_SEND_CMD(resp, 0, 500, "AT+CREG=1");
 				
         /* check the GSM network is registered */
         for (i = 0; i < CREG_RETRY; i++)
         {
-            AT_SEND_CMD(resp, 0, 300, "AT+CREG=?");
+            AT_SEND_CMD(resp, 0, 500, "AT+CREG=?");
             at_resp_parse_line_args_by_kw(resp, "+CREG:", "+CREG: %s", &parsed_data);
 						rt_kprintf("%s\n",resp);
             if (!strncmp(parsed_data, "(0,1,2)", sizeof(parsed_data)) || !strncmp(parsed_data, "(0,5,2)", sizeof(parsed_data)))
@@ -1098,7 +1085,7 @@ static void a9g_init_thread_entry(void *parameter)
         /* check signal strength */
         for (i = 0; i < CSQ_RETRY; i++)
         {
-            AT_SEND_CMD(resp, 0, 300, "AT+CSQ");
+            AT_SEND_CMD(resp, 0, 500, "AT+CSQ");
             at_resp_parse_line_args_by_kw(resp, "+CSQ:", "+CSQ: %s", &parsed_data);
             if (strncmp(parsed_data, ",99", sizeof(parsed_data)))
             {
@@ -1115,23 +1102,23 @@ static void a9g_init_thread_entry(void *parameter)
         }
 				
 				/* Set GPRS attachment */
-				AT_SEND_CMD(resp, 2, 300, "AT+CGATT=1");
+				AT_SEND_CMD(resp, 0, 500, "AT+CGATT=1");
 				rt_thread_mdelay(10);
 				
 				/* Define the PDP context */
-				AT_SEND_CMD(resp, 2, 300, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
+				AT_SEND_CMD(resp, 0, 500, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
 				rt_thread_mdelay(10);
 				
 				/* Set PDP context activation */
-				AT_SEND_CMD(resp, 2, 300, "AT+CGACT=1,1");
+				AT_SEND_CMD(resp, 0, 500, "AT+CGACT=1,1");
 				rt_thread_mdelay(10);
 				
         /* Set to multiple connections */
-        AT_SEND_CMD(resp, 0, 300, "AT+CIPMUX?");
+        AT_SEND_CMD(resp, 1, 500, "AT+CIPMUX?");
         at_resp_parse_line_args_by_kw(resp, "+CIPMUX:", "+CIPMUX: %d", &qimux);
         if (qimux == 0)
         {
-            AT_SEND_CMD(resp, 0, 300, "AT+CIPMUX=1");
+            AT_SEND_CMD(resp, 0, 500, "AT+CIPMUX=1");
         }
 				
 				/* get the local address */
@@ -1177,7 +1164,7 @@ static void a9g_init_thread_entry(void *parameter)
 
     /* set network interface device status and address information */
     a9g_netdev_set_info(netdev_get_by_name(A9G_NETDEV_NAME));
-//    a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
+    a9g_netdev_check_link_status(netdev_get_by_name(A9G_NETDEV_NAME));
 }
 
 /* init for A9G */
@@ -1197,7 +1184,7 @@ int a9g_net_init(void)
     }
 #ifdef AT_USING_A9G_GPS
 		
-//		gps_init(RT_NULL);
+		gps_init();
 		
 #endif
 		
@@ -1207,7 +1194,7 @@ int a9g_net_init(void)
 		
 #ifdef AT_USING_A9G_GPS
 		
-		gps_init(RT_NULL);
+		gps_init();
 		
 #endif
 		
@@ -1235,7 +1222,7 @@ static int a9g_netdev_set_info(struct netdev *netdev)
 {
 #define A9G_IEMI_RESP_SIZE      32
 #define A9G_IPADDR_RESP_SIZE    32
-#define A9G_DNS_RESP_SIZE       96
+//#define A9G_DNS_RESP_SIZE       96
 #define A9G_INFO_RESP_TIMO      rt_tick_from_millisecond(300)
 
     int result = RT_EOK;
@@ -1251,9 +1238,9 @@ static int a9g_netdev_set_info(struct netdev *netdev)
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
 
     /* set network interface device status */
-    netdev_low_level_set_status(netdev, RT_TRUE);
-    netdev_low_level_set_link_status(netdev, RT_TRUE);
-    netdev_low_level_set_dhcp_status(netdev, RT_TRUE);
+//    netdev_low_level_set_status(netdev, RT_TRUE);
+//    netdev_low_level_set_link_status(netdev, RT_TRUE);
+//    netdev_low_level_set_dhcp_status(netdev, RT_TRUE);
 
     resp = at_create_resp(A9G_IEMI_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
     if (resp == RT_NULL)
@@ -1280,8 +1267,10 @@ static int a9g_netdev_set_info(struct netdev *netdev)
 
         if (at_resp_parse_line_args(resp, 2, "%s", iemi) <= 0)
         {
+						rt_kprintf("%s\n", resp->buf);
             LOG_E("Prase \"AT+CGSN\" commands resposne data error!");
             result = -RT_ERROR;
+						rt_kprintf("fuck your mother!!\n");
             goto __exit;
         }
 
@@ -1306,8 +1295,20 @@ static int a9g_netdev_set_info(struct netdev *netdev)
     {
         #define IP_ADDR_SIZE_MAX    16
         char ipaddr[IP_ADDR_SIZE_MAX] = {0};
-        
-        at_resp_set_info(resp, A9G_IPADDR_RESP_SIZE, 2, A9G_INFO_RESP_TIMO);
+				
+				at_resp_set_info(resp, A9G_IPADDR_RESP_SIZE, 2, A9G_INFO_RESP_TIMO);
+				
+				/* Set GPRS attachment */
+				AT_SEND_CMD(resp, 0, 300, "AT+CGATT=1");
+				rt_thread_mdelay(10);
+				
+				/* Define the PDP context */
+				AT_SEND_CMD(resp, 0, 300, "AT+CGDCONT=1,\"IP\",\"CMNET\"");
+				rt_thread_mdelay(10);
+				
+				/* Set PDP context activation */
+				AT_SEND_CMD(resp, 0, 300, "AT+CGACT=1,1");
+				rt_thread_mdelay(10);
 
         /* send "AT+CIFSR" commond to get IP address */
         if (at_exec_cmd(resp, "AT+CIFSR") < 0)
@@ -1559,6 +1560,66 @@ static int a9g_netdev_add(const char *netdev_name)
 
     return netdev_register(netdev, netdev_name, RT_NULL);
 }
+
+/* A9G client server thread */
+static void a9g_client_thread_entry(void *parameter)
+{
+#define CLIENT_RETRY			2
+#define CLIENT_SOCKET			0
+#define CLIENT_IP					"47.100.28.6"
+#define CLIENT_PORT				8086
+#define CLIENT_TIME				2
+		
+		rt_int8_t time = 0;
+		at_client_t client = RT_NULL;
+		at_response_t resp = RT_NULL;
+		
+		const char str[] = "hello RT-Thread!321343516513516541351654654.,kgfhalkjsbljkg";
+	
+		client = at_client_get(AT_DEVICE_NAME);
+		
+		while(time < CLIENT_TIME)
+		{
+				time++;
+				
+				/* start A9G connect with server */
+				a9g_socket_connect(CLIENT_SOCKET, CLIENT_IP, CLIENT_PORT, AT_SOCKET_TCP, RT_TRUE);
+				rt_thread_mdelay(1000);
+				/* send data to server */
+				a9g_socket_send(CLIENT_SOCKET, str, sizeof(str), AT_SOCKET_TCP);
+				rt_thread_mdelay(1000);
+				/* close A9G connect with server */
+				a9g_socket_close(CLIENT_SOCKET);
+				rt_thread_mdelay(1000);
+		}
+		LOG_D("AT client test stop!");
+}
+
+
+int a9g_client_sample(void)
+{
+#define A9G_CLIENT_THREAD_PRIORITY         25
+#define A9G_CLIENT_THREAD_STACK_SIZE       512
+#define A9G_CLIENT_THREAD_TIMESLICE        500
+		
+		rt_thread_t tid;
+		
+		tid = rt_thread_create("a9g_client_server", 							/* 线程名称 */
+														a9g_client_thread_entry,					/* 线程入口函数 */
+														RT_NULL, 													/**/
+														A9G_CLIENT_THREAD_STACK_SIZE, 		/* 线程栈内存 */
+														A9G_CLIENT_THREAD_PRIORITY, 			/* 线程优先级 */
+														A9G_CLIENT_THREAD_TIMESLICE);			/* 线程轮询时间 */
+		
+		if(tid !=RT_NULL)
+		{
+				rt_thread_startup(tid);
+				return RT_EOK;
+		}
+		else 
+			return RT_ERROR;
+}
+MSH_CMD_EXPORT(a9g_client_sample, client test);
 
 static int at_socket_device_init(void)
 {
