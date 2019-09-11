@@ -55,7 +55,8 @@ __packed typedef struct
 	rt_uint16_t speed;					//地面速率,放大了1000倍,实际除以10.单位:0.001公里/小时	 
 }nmea_msg;
 
-				 
+static nmea_msg gps_data;
+
 int NMEA_Str2num(rt_uint8_t *buf,rt_uint8_t*dx);
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf);
 void NMEA_GPGSV_Analysis(nmea_msg *gpsx,rt_uint8_t *buf);

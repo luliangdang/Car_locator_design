@@ -266,7 +266,7 @@ static void mqtt_client(void)
     mqtt_params.handle_event.pcontext = NULL;
 
     /* Convert uppercase letters in host to lowercase */
-	rt_kprintf("host: %s\r\n", rt_strlwr((char*)mqtt_params.host));
+		rt_kprintf("host: %s\r\n", rt_strlwr((char*)mqtt_params.host));
 
     /* Construct a MQTT client with specify parameter */
     pclient = IOT_MQTT_Construct(&mqtt_params);

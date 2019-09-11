@@ -198,10 +198,11 @@ __retry:
 						rt_kprintf("laozizhaodaolede!!!\n");
 				}
         LOG_E("socket (%d) connect failed, failed to establish a connection.", socket);
-//				a9g_socket_close(socket);
+				a9g_socket_close(socket);
         result = -RT_ERROR;
         goto __exit;
 		}
+		cur_socket = socket;
 		LOG_I("socket (%d) connect success.", socket);
 
 __exit:
@@ -358,7 +359,7 @@ static int a9g_domain_resolve(const char *name, char ip[16])
         }
 
         /* domain name prase error options */
-        if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP: 0", "+CDNSGIP: 0,%d", &err_code) > 0)
+        if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP: 1", "+CDNSGIP: 1,%d", &err_code) > 0)
         {
             /* 3 - network error, 8 - dns common error */
             if (err_code == 3 || err_code == 8)
@@ -877,7 +878,7 @@ static void data_read(uint8_t* buff, int len)
     buff[count] = 0;
 }
 
-static nmea_msg gps_data;
+extern nmea_msg gps_data;
 void gps_thread_entry(void *parameter)
 {
     uint8_t line[GPS_DEVICE_RECV_BUFF_LEN];
@@ -1239,7 +1240,7 @@ static int a9g_netdev_set_info(struct netdev *netdev)
 
     /* set network interface device status */
 //    netdev_low_level_set_status(netdev, RT_TRUE);
-//    netdev_low_level_set_link_status(netdev, RT_TRUE);
+    netdev_low_level_set_link_status(netdev, RT_TRUE);
 //    netdev_low_level_set_dhcp_status(netdev, RT_TRUE);
 
     resp = at_create_resp(A9G_IEMI_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
@@ -1565,31 +1566,29 @@ static int a9g_netdev_add(const char *netdev_name)
 static void a9g_client_thread_entry(void *parameter)
 {
 #define CLIENT_RETRY			2
-#define CLIENT_SOCKET			0
 #define CLIENT_IP					"47.100.28.6"
 #define CLIENT_PORT				8086
-#define CLIENT_TIME				2
 		
 		rt_int8_t time = 0;
 		at_client_t client = RT_NULL;
 		at_response_t resp = RT_NULL;
 		
-		const char str[] = "hello RT-Thread!321343516513516541351654654.,kgfhalkjsbljkg";
+		const char str[] = "hello RT-Thread!";
 	
 		client = at_client_get(AT_DEVICE_NAME);
 		
-		while(time < CLIENT_TIME)
+		while(time < CLIENT_RETRY)
 		{
 				time++;
 				
 				/* start A9G connect with server */
-				a9g_socket_connect(CLIENT_SOCKET, CLIENT_IP, CLIENT_PORT, AT_SOCKET_TCP, RT_TRUE);
+				a9g_socket_connect(cur_socket, CLIENT_IP, CLIENT_PORT, AT_SOCKET_TCP, RT_TRUE);
 				rt_thread_mdelay(1000);
 				/* send data to server */
-				a9g_socket_send(CLIENT_SOCKET, str, sizeof(str), AT_SOCKET_TCP);
+				a9g_socket_send(cur_socket, str, sizeof(str), AT_SOCKET_TCP);
 				rt_thread_mdelay(1000);
 				/* close A9G connect with server */
-				a9g_socket_close(CLIENT_SOCKET);
+				a9g_socket_close(cur_socket);
 				rt_thread_mdelay(1000);
 		}
 		LOG_D("AT client test stop!");
