@@ -14,6 +14,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <rthw.h>
+#include <board.h>
 
 #include <netdb.h>
 #include <sys/socket.h>

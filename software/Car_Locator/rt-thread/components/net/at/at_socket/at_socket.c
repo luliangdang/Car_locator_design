@@ -32,7 +32,8 @@
         ((unsigned char *)&addr)[2], \
         ((unsigned char *)&addr)[3]
 
-#if !defined(AT_DEVICE_SOCKETS_NUM) || defined(AT_DEVICE_NOT_SELECTED)
+//#if !defined(AT_DEVICE_SOCKETS_NUM) || defined(AT_DEVICE_NOT_SELECTED)
+#if !defined(AT_DEVICE_SOCKETS_NUM)
 #error The AT socket device is not selected, please select it through the env menuconfig.
 #endif
 

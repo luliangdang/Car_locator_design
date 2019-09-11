@@ -5,7 +5,13 @@ cwd     = GetCurrentDir()
 CPPPATH = [cwd, str(Dir('#'))]
 src     = Split("""
 main.c
+key.c
+led.c
+at_socket_a9g.c
+minmea.c
+client_server.c
 """)
+
 
 group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
 

@@ -380,6 +380,7 @@ int at_client_obj_wait_connect(at_client_t client, rt_uint32_t timeout)
         /* Check whether it is already connected */
         resp->line_counts = 0;
         rt_device_write(client->device, 0, "AT\r\n", 4);
+				rt_kprintf("send at ok,wait recive......\n");
 
         if (rt_sem_take(client->resp_notice, resp->timeout) != RT_EOK)
             continue;
@@ -472,6 +473,7 @@ rt_size_t at_client_obj_recv(at_client_t client, char *buf, rt_size_t size, rt_i
     {
         if (read_idx < size)
         {
+						rt_kprintf("%d\n",read_idx);
             result = at_client_getchar(client, &ch, timeout);
             if (result != RT_EOK)
             {
@@ -665,8 +667,10 @@ static void client_parser(at_client_t client)
     {
         if (at_recv_readline(client) > 0)
         {
+						LOG_D("client: %d----%s",client->recv_bufsz, client->recv_buffer );
             if ((urc = get_urc_obj(client)) != RT_NULL)
             {
+								LOG_D("URC->func= %s", urc->func);
                 /* current receive is request, try to execute related operations */
                 if (urc->func != RT_NULL)
                 {
