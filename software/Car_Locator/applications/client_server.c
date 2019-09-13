@@ -12,7 +12,7 @@
 
 #include "gps.h"
 
-static rt_thread_t recv_data_pro_thread = RT_NULL;
+//static rt_thread_t recv_data_pro_thread = RT_NULL;
 
 rt_int32_t g_socket_id = -1;
 char g_post_data_src[512];
@@ -88,16 +88,16 @@ rt_err_t socket_connect(rt_int32_t socket_id, char *remote_addr, rt_int32_t remo
 **************************************************************/
 rt_err_t socket_close(rt_int32_t socket_id)
 {
-	if(0 == at_closesocket(socket_id))
-	{
-		LOG_I("Socket closed successfully\n");
-		return RT_EOK;
-	}
-	else
-	{
-		LOG_E("Socket closed failure\n");
-		return RT_ERROR;
-	}
+		if(0 == at_closesocket(socket_id))
+		{
+				LOG_I("Socket closed successfully\n");
+				return RT_EOK;
+		}
+		else
+		{
+				LOG_E("Socket closed failure\n");
+				return RT_ERROR;
+		}
 }
 
 /**************************************************************
@@ -177,10 +177,10 @@ void connect_aliot_http_device(void)
 		g_socket_id = socket_create();
 		if(g_socket_id >= 0)
 		{
-				if(RT_EOK == socket_connect(g_socket_id, "139.196.67.150", 80))
+				if(RT_EOK == socket_connect(g_socket_id, "47.100.28.6", 8086))
 				{
 						rt_thread_delay(500);
-						rt_thread_resume(recv_data_pro_thread);
+//						rt_thread_resume(recv_data_pro_thread);
 				}
 		}
 }
@@ -194,11 +194,11 @@ void connect_aliot_http_device(void)
 **************************************************************/
 void disconnect_aliot_http_device(void)
 {
-	if(RT_EOK == socket_close(g_socket_id))
-	{
-		rt_thread_delay(500);
-		rt_thread_suspend(recv_data_pro_thread);
-	}
+		if(RT_EOK == socket_close(g_socket_id))
+		{
+				rt_thread_delay(500);
+//				rt_thread_suspend(recv_data_pro_thread);
+		}
 }
 
 void a9g(int argc, char *argv[])
@@ -208,10 +208,12 @@ void a9g(int argc, char *argv[])
         if (!strcmp(argv[1], "connect"))
         {
 						connect_aliot_http_device();
-			//rt_thread_resume(recv_data_pro_thread);
+//						rt_thread_resume(recv_data_pro_thread);
         }
         else if (!strcmp(argv[1], "post"))
         {
+						char str[] = "hello RT-Thread";
+						socket_send(g_socket_id, str, sizeof(str));
 //            post_data_stream_to_onenet();
         }
 				else if (!strcmp(argv[1], "get"))

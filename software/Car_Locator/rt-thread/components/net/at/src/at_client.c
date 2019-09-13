@@ -670,7 +670,7 @@ static void client_parser(at_client_t client)
 						LOG_D("client: %d----%s",client->recv_bufsz, client->recv_buffer );
             if ((urc = get_urc_obj(client)) != RT_NULL)
             {
-								LOG_D("URC->func= %s", urc->func);
+//								LOG_D("URC->func= %s", urc->func);
                 /* current receive is request, try to execute related operations */
                 if (urc->func != RT_NULL)
                 {

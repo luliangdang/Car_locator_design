@@ -25,7 +25,7 @@ __packed typedef struct
 }nmea_slmsg;
 //UTC时间信息
 __packed typedef struct  
-{										    
+{
  	rt_uint16_t year;	//年份
 	rt_uint8_t month;	//月份
 	rt_uint8_t date;	//日期
@@ -35,7 +35,7 @@ __packed typedef struct
 }nmea_utc_time;
 //NMEA 0183 协议解析后数据存放结构体
 __packed typedef struct  
-{										    
+{
  	rt_uint8_t svnum;					//可见卫星数
 	nmea_slmsg slmsg[12];		//最多12颗卫星
 	nmea_utc_time utc;			//UTC时间

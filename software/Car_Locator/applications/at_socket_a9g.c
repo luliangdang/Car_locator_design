@@ -87,7 +87,7 @@ static int a9g_socket_close(int socket)
     int result = 0;
     at_response_t resp = RT_NULL;
 
-    resp = at_create_resp(512, 0, RT_TICK_PER_SECOND);
+    resp = at_create_resp(128, 0, RT_TICK_PER_SECOND);
     if (!resp)
     {
         LOG_E("No memory for response structure!");
@@ -104,12 +104,12 @@ static int a9g_socket_close(int socket)
         result = -RT_ERROR;
         goto __exit;
     }
+		rt_thread_mdelay(RT_TICK_PER_SECOND);
 
 		LOG_I("socket (%d) close success.", socket);
 
 __exit:
     rt_mutex_release(at_event_lock);
-//		at_exec_cmd(resp, "ATE0");
 		
     if (resp)
     {
@@ -152,13 +152,7 @@ static int a9g_socket_connect(int socket, char *ip, int32_t port, enum at_socket
     /* lock AT socket connect */
     rt_mutex_take(at_event_lock, RT_WAITING_FOREVER);
 		
-		/* lock AT socket connect contrl */
-//		rt_event_send(at_contrl_event, A9G_EVENT_SEND_LOCK);
 __retry:
-		
-    /* Clear socket connect event */
-//    at_socket_event_recv(SET_EVENT(socket, A9G_EVENT_CONN_OK | A9G_EVENT_CONN_FAIL), 0, RT_EVENT_FLAG_OR);
-
     if (is_client)
     {
         switch (type)
@@ -240,7 +234,7 @@ static int a9g_socket_send(int socket, const char *buff, size_t bfsz, enum at_so
 		
 		bfsz -= 2;
 
-    resp = at_create_resp(512, 1, 5 * RT_TICK_PER_SECOND);
+    resp = at_create_resp(512, 2, 5 * RT_TICK_PER_SECOND);
     if (!resp)
     {
         LOG_E("No memory for response structure!");
@@ -255,6 +249,8 @@ static int a9g_socket_send(int socket, const char *buff, size_t bfsz, enum at_so
     /* set current socket for send URC event */
     cur_socket = socket;
     /* set AT client end sign to deal with '>' sign.*/
+		rt_kprintf("client end sign: %d\n", at_client_get(A9G_NETDEV_NAME)->end_sign);
+		rt_kprintf(">: %d\n", ">");
     at_set_end_sign('>');
 
     while (sent_size < bfsz)
@@ -290,10 +286,11 @@ static int a9g_socket_send(int socket, const char *buff, size_t bfsz, enum at_so
 
         sent_size += cur_pkt_size;
     }
+		rt_thread_mdelay(RT_TICK_PER_SECOND);
 		
 		rt_thread_delay(500);
-		rt_kprintf("%d\n", resp->line_counts);
-		rt_kprintf("%s\n", resp->buf);
+		rt_kprintf("resp->line_counts: %d\n", resp->line_counts);
+		rt_kprintf("resp->buf: %s\n", resp->buf);
 		/* check the socket send result */
 		if (at_resp_get_line(resp, 1) == RT_NULL )
 		{
@@ -333,13 +330,15 @@ static int a9g_domain_resolve(const char *name, char ip[16])
 
     int i, result = RT_EOK;
     char recv_ip[16] = { 0 };
+		char recv_data[128] = { 0 };
+		char *host;
     at_response_t resp = RT_NULL;
 
     RT_ASSERT(name);
     RT_ASSERT(ip);
 
     /* The maximum response time is 14 seconds, affected by network status */
-    resp = at_create_resp(128, 4, 14 * RT_TICK_PER_SECOND);
+    resp = at_create_resp(256, 2, 14 * RT_TICK_PER_SECOND);
     if (!resp)
     {
         LOG_E("No memory for response structure!");
@@ -355,11 +354,14 @@ static int a9g_domain_resolve(const char *name, char ip[16])
         if (at_exec_cmd(resp, "AT+CDNSGIP=\"%s\"", name) < 0)
         {
             result = -RT_ERROR;
+						LOG_E("recive timeout");
             goto __exit;
         }
+				rt_thread_mdelay(100);
+				LOG_D("revice data: %s", resp->buf);
 
         /* domain name prase error options */
-        if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP: 1", "+CDNSGIP: 1,%d", &err_code) > 0)
+        if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP: 0", "+CDNSGIP: 0,%d", &err_code) > 0)
         {
             /* 3 - network error, 8 - dns common error */
             if (err_code == 3 || err_code == 8)
@@ -368,15 +370,29 @@ static int a9g_domain_resolve(const char *name, char ip[16])
                 goto __exit;
             }
         }
-
+				
+				if (at_resp_parse_line_args_by_kw(resp, "com\",", "%s", recv_data) <0)
+				{
+				    rt_thread_mdelay(100);
+						LOG_E("GET THE ERROR DNS");
+				}
+				else
+				{
+						rt_kprintf("%s\n", recv_data);
+						LOG_I("GET THE DNS");
+						goto __get_ok;
+				}
+				
         /* parse the third line of response data, get the IP address */
         if (at_resp_parse_line_args_by_kw(resp, "+CDNSGIP:", "%*[^,],%*[^,],\"%[^\"]", recv_ip) < 0)
         {
             rt_thread_mdelay(100);
+						LOG_E("resolve failed, retyr....");
             /* resolve failed, maybe receive an URC CRLF */
             continue;
         }
 
+__get_ok:
         if (strlen(recv_ip) < 8)
         {
             rt_thread_mdelay(100);
@@ -403,6 +419,17 @@ __exit:
     return result;
 
 }
+
+int domain_test(int argc, char *argv[])
+{
+#define TEST_HOST 		"link.rt-thread.org"
+		char ip[15] = { 0 };
+		if (argc > 1)
+		{
+				a9g_domain_resolve(TEST_HOST, ip);
+		}
+}
+MSH_CMD_EXPORT(domain_test, test domain function);
 
 /**
  * set AT socket event notice callback
@@ -501,7 +528,7 @@ static void urc_recv_func(const char *data, rt_size_t size)
 		}
 		tdata++;
 		strcpy(recv_buf, tdata);
-		rt_kprintf("%s\n", recv_buf);
+		rt_kprintf("recv_buf:%s\n", recv_buf);
 
     /* notice the receive buffer and buffer size */
     if (at_evt_cb_set[AT_SOCKET_EVT_RECV])
@@ -522,13 +549,13 @@ static void urc_func(const char *data, rt_size_t size)
 
 static const struct at_urc urc_table[] = {
 //        {"",       	        "OK\r\n",               urc_func},
-//				{"+CIPNUM",         "CONNECT OK\r\nok\r\n",         urc_connect_func},
-//        {"",                ", CONNECT FAIL\r\n",   urc_connect_func},
+					{"+CIPNUM",         "CONNECT OK\r\nok\r\n", 	urc_connect_func},
+					{"",                ", CONNECT FAIL\r\n",   	urc_connect_func},
 //        {">",     			    "OK\r\n",               urc_send_func},
 //        {"FAIL",   			    "\r\n",                 urc_send_func},
 //        {"",                ", CLOSE OK\r\n",        urc_close_func},
 //        {"",                ", CLOSED\r\n",          urc_close_func},
-        {"+CIPRCV,",        "\r\n",                 	 urc_recv_func},
+					{"+CIPRCV,",        "\r\n",                 	 urc_recv_func},
 };
 
 #ifdef AT_USING_A9G_GPS
@@ -1240,8 +1267,11 @@ static int a9g_netdev_set_info(struct netdev *netdev)
 
     /* set network interface device status */
 //    netdev_low_level_set_status(netdev, RT_TRUE);
-    netdev_low_level_set_link_status(netdev, RT_TRUE);
+//    netdev_low_level_set_link_status(netdev, RT_TRUE);
 //    netdev_low_level_set_dhcp_status(netdev, RT_TRUE);
+		netdev->flags |= NETDEV_FLAG_UP;
+		netdev->flags |= NETDEV_FLAG_LINK_UP;
+		netdev->flags |= NETDEV_FLAG_INTERNET_UP;
 
     resp = at_create_resp(A9G_IEMI_RESP_SIZE, 0, A9G_INFO_RESP_TIMO);
     if (resp == RT_NULL)
@@ -1378,8 +1408,10 @@ static void check_link_status_entry(void *parameter)
         at_resp_parse_line_args_by_kw(resp, "+CGREG:", "+CGREG: %d,%d", &result_code, &link_status);
 
         /* check the network interface device link status  */
+				/* 配置网卡连接状态，用于判断网卡设备是否具有有效的链路连接 */
         if ((A9G_LINK_STATUS_OK == link_status) != netdev_is_link_up(netdev))
         {
+					  /* 设置网卡底层连接状态（UP/DOWN） */
             netdev_low_level_set_link_status(netdev, (A9G_LINK_STATUS_OK == link_status));
         }
 
@@ -1452,7 +1484,7 @@ static int a9g_netdev_ping(struct netdev *netdev, const char *host, size_t data_
     int result = RT_EOK;
     at_response_t resp = RT_NULL;
     char ip_addr[A9G_PING_IP_SIZE] = {0};
-    int response, time, ttl, i;
+    int byte, time, ttl, i;
 
     RT_ASSERT(netdev);
     RT_ASSERT(host);
@@ -1481,14 +1513,15 @@ static int a9g_netdev_ping(struct netdev *netdev, const char *host, size_t data_
     }
 
     /* send "AT+CIPPING=<IP addr>[,<retryNum>[,<dataLen>[,<timeout>[,<ttl>]]]]" commond to send ping request */
-    if (at_exec_cmd(resp, "AT+CIPPING=%s,1,%d,%d,64", host, data_len, A9G_PING_TIMEO / (RT_TICK_PER_SECOND / 10)) < 0)
+    /* send "AT+PING=<DNS/IP addr>[,<timeout>,<packet_lenth(36~1500,ipv4)(56~150,ipv6)>,<ping_count(1~65535)>]" commond to send ping request */
+		if (at_exec_cmd(resp, "AT+PING=%s,%d,%d,1", host, A9G_PING_TIMEO / (RT_TICK_PER_SECOND / 10), data_len) < 0)
     {
         result = -RT_ERROR;
         goto __exit;
     }
 
-    if (at_resp_parse_line_args_by_kw(resp, "+CIPPING:", "+CIPPING:%d,\"%[^\"]\",%d,%d",
-             &response, ip_addr, &time, &ttl) <= 0)
+    if (at_resp_parse_line_args_by_kw(resp, "Reply", "Reply from %s: bytes= %d time = %d(ms), TTL = %d",
+             ip_addr, &byte, &time, &ttl) <= 0)
     {
         LOG_D("Prase \"AT+CIPPING\" commands resposne data error!");
         result = -RT_ERROR;

@@ -222,21 +222,28 @@ static void check_netdev_internet_up_work(struct rt_work *work, void *work_data)
     send_data[9] = RT_VERSION;
     send_data[10] = RT_SUBVERSION;
     send_data[11] = RT_REVISION;
+		
+		LOG_I("UDP SEND DATA: %s", send_data);
 
-    skt_ops->sendto(sockfd, send_data, SAL_INTERNET_BUFF_LEN, 0,
-            (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
+//    skt_ops->sendto(sockfd, send_data, SAL_INTERNET_BUFF_LEN, 0,
+//            (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
+		
+		LOG_I("SEND DATA OK!\nwaite for recive");
+		
+//    result = skt_ops->recvfrom(sockfd, &recv_data, sizeof(recv_data), 0, (struct sockaddr *)&server_addr, &addr_len);
+//    if (result < 0)
+//    {
+//				LOG_E("WAITE REVICE DATA ERROR");
+//        goto __exit;
+//    }
+		LOG_I("GET RECIVE DATA");
 
-    result = skt_ops->recvfrom(sockfd, &recv_data, sizeof(recv_data), 0, (struct sockaddr *)&server_addr, &addr_len);
-    if (result < 0)
-    {
-        goto __exit;
-    }
-
-    if (recv_data == RT_FALSE)
-    {
-        result = -RT_ERROR;
-        goto __exit;
-    }
+//    if (recv_data == RT_FALSE)
+//    {
+//        result = -RT_ERROR;
+//        goto __exit;
+//    }
+		result = 1;
 
 __exit:
     if (result > 0)
