@@ -1,0 +1,10 @@
+<!--pages/tips/tips.wxml-->
+<view>
+  <text>下单成功界面</text>
+  <view>
+    <button bindtap="back_menu">返回菜单</button>
+  </view>
+  <view>
+    <button bindtap="check">查看历史订单</button>
+  </view>
+</view>

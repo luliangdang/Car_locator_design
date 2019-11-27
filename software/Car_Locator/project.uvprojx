@@ -14,16 +14,16 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F407ZGTx</Device>
+          <Device>STM32F407ZE</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.13.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
-          <Cpu>IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x80000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407ZGTx$CMSIS\Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407ZE$Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32F407ZGTx$Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</RegisterFile>
+          <RegisterFile>$$Device:STM32F407ZE$Device\Include\stm32f4xx.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32F407ZGTx$CMSIS\SVD\STM32F40x.svd</SFDFile>
+          <SFDFile>$$Device:STM32F407ZE$SVD\STM32F40x.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -209,7 +209,7 @@
             <Ra1Chk>0</Ra1Chk>
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
-            <Im1Chk>0</Im1Chk>
+            <Im1Chk>1</Im1Chk>
             <Im2Chk>1</Im2Chk>
             <OnChipMemories>
               <Ocm1>
@@ -250,7 +250,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -275,7 +275,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -336,9 +336,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>MQTT_DIRECT, IOTX_NET_INIT_WITH_PK_EXT, MQTT_COMM_ENABLED, USE_HAL_DRIVER, STM32F407xx, SERVICE_OTA_ENABLED, OTA_SIGNAL_CHANNEL=1, IOTX_WITHOUT_ITLS, RT_USING_ARM_LIBC, _PLATFORM_IS_RTTHREAD_</Define>
+              <Define>MQTT_DIRECT, IOTX_NET_INIT_WITH_PK_EXT, MQTT_COMM_ENABLED, USE_HAL_DRIVER, STM32F407xx, IOTX_WITHOUT_TLS, IOTX_WITHOUT_ITLS, RT_USING_ARM_LIBC, _PLATFORM_IS_RTTHREAD_</Define>
               <Undefine></Undefine>
-              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\iot-coap-c;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\log\LITE-log;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\ota\Link-OTA;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\LITE-utils;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\misc;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\digest;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\sdk-impl;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\sdk-impl\exports;packages\ali-iotkit-v2.0.4\iotkit-embedded\src\sdk-impl\imports;packages\at_device-v1.5.0;packages\mbedtls-v2.7.10\mbedtls\include;packages\mbedtls-v2.7.10\ports\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\dfs\filesystems\elmfat;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\at\include;rt-thread\components\net\at\at_socket;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
+              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\log\LITE-log;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\sdk-impl;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\sdk-impl\exports;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\sdk-impl\imports;packages\at_device-latest\inc;packages\CmBacktrace-v1.3.0;packages\mbedtls-v2.7.10\mbedtls\include;packages\mbedtls-v2.7.10\ports\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\dfs\filesystems\elmfat;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\at\include;rt-thread\components\net\at\at_socket;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -478,9 +478,19 @@
               <FilePath>applications\led.c</FilePath>
             </File>
             <File>
+              <FileName>at_device_a9g.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\at_device_a9g.c</FilePath>
+            </File>
+            <File>
               <FileName>at_socket_a9g.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\at_socket_a9g.c</FilePath>
+            </File>
+            <File>
+              <FileName>at_sample_a9g.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\at_sample_a9g.c</FilePath>
             </File>
             <File>
               <FileName>minmea.c</FileName>
@@ -491,6 +501,21 @@
               <FileName>client_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\client_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>rc522.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\rc522.c</FilePath>
+            </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\gps.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -526,6 +551,11 @@
               <FileName>drv_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\HAL_Drivers\drv_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\HAL_Drivers\drv_spi.c</FilePath>
             </File>
             <File>
               <FileName>drv_sdio.c</FileName>
@@ -614,232 +644,212 @@
             <File>
               <FileName>mqtt-example.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\samples\mqtt\mqtt-example.c</FilePath>
-            </File>
-            <File>
-              <FileName>ota_mqtt-example.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\samples\ota\ota_mqtt-example.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\samples\mqtt\mqtt-example.c</FilePath>
             </File>
             <File>
               <FileName>iotx_ca_cert.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\coap\iotx_ca_cert.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\coap\iotx_ca_cert.c</FilePath>
             </File>
             <File>
               <FileName>iotx_coap_api.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\coap\iotx_coap_api.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\coap\iotx_coap_api.c</FilePath>
             </File>
             <File>
               <FileName>CoAPDeserialize.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\iot-coap-c\CoAPDeserialize.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPDeserialize.c</FilePath>
             </File>
             <File>
               <FileName>CoAPExport.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\iot-coap-c\CoAPExport.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPExport.c</FilePath>
             </File>
             <File>
               <FileName>CoAPMessage.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\iot-coap-c\CoAPMessage.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPMessage.c</FilePath>
             </File>
             <File>
               <FileName>CoAPNetwork.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\iot-coap-c\CoAPNetwork.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPNetwork.c</FilePath>
             </File>
             <File>
               <FileName>CoAPSerialize.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\iot-coap-c\CoAPSerialize.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPSerialize.c</FilePath>
             </File>
             <File>
               <FileName>lite-log.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\log\LITE-log\lite-log.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\log\LITE-log\lite-log.c</FilePath>
             </File>
             <File>
               <FileName>mqtt_client.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\mqtt_client.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\mqtt_client.c</FilePath>
             </File>
             <File>
               <FileName>mqtt_instance.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\mqtt_instance.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\mqtt_instance.c</FilePath>
             </File>
             <File>
               <FileName>MQTTConnectClient.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTConnectClient.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTConnectClient.c</FilePath>
             </File>
             <File>
               <FileName>MQTTDeserializePublish.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTDeserializePublish.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTDeserializePublish.c</FilePath>
             </File>
             <File>
               <FileName>MQTTPacket.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTPacket.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTPacket.c</FilePath>
             </File>
             <File>
               <FileName>MQTTSerializePublish.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTSerializePublish.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTSerializePublish.c</FilePath>
             </File>
             <File>
               <FileName>MQTTSubscribeClient.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTSubscribeClient.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTSubscribeClient.c</FilePath>
             </File>
             <File>
               <FileName>MQTTUnsubscribeClient.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTUnsubscribeClient.c</FilePath>
-            </File>
-            <File>
-              <FileName>ota.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\ota\Link-OTA\src\ota.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTUnsubscribeClient.c</FilePath>
             </File>
             <File>
               <FileName>json_parser.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\LITE-utils\json_parser.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\json_parser.c</FilePath>
             </File>
             <File>
               <FileName>json_token.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\LITE-utils\json_token.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\json_token.c</FilePath>
             </File>
             <File>
               <FileName>lite-utils_testsuites.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\LITE-utils\lite-utils_testsuites.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\lite-utils_testsuites.c</FilePath>
             </File>
             <File>
               <FileName>mem_stats.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\LITE-utils\mem_stats.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\mem_stats.c</FilePath>
             </File>
             <File>
               <FileName>string_utils.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\packages\LITE-utils\string_utils.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\string_utils.c</FilePath>
             </File>
             <File>
               <FileName>ca.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\ca.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\ca.c</FilePath>
             </File>
             <File>
               <FileName>class_interface.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\class_interface.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\class_interface.c</FilePath>
             </File>
             <File>
               <FileName>guider.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\guider.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\guider.c</FilePath>
             </File>
             <File>
               <FileName>id2_guider.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\id2_guider.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\id2_guider.c</FilePath>
             </File>
             <File>
               <FileName>iotx_device.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\iotx_device.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\iotx_device.c</FilePath>
             </File>
             <File>
               <FileName>report.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\report.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\report.c</FilePath>
             </File>
             <File>
               <FileName>sdk-impl.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\system\iotkit-system\src\sdk-impl.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\sdk-impl.c</FilePath>
             </File>
             <File>
               <FileName>utils_epoch_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\misc\utils_epoch_time.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_epoch_time.c</FilePath>
             </File>
             <File>
               <FileName>utils_httpc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\misc\utils_httpc.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_httpc.c</FilePath>
             </File>
             <File>
               <FileName>utils_list.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\misc\utils_list.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_list.c</FilePath>
             </File>
             <File>
               <FileName>utils_net.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\misc\utils_net.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_net.c</FilePath>
             </File>
             <File>
               <FileName>utils_timer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\misc\utils_timer.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_timer.c</FilePath>
             </File>
             <File>
               <FileName>utils_base64.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\digest\utils_base64.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_base64.c</FilePath>
             </File>
             <File>
               <FileName>utils_hmac.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\digest\utils_hmac.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_hmac.c</FilePath>
             </File>
             <File>
               <FileName>utils_md5.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\digest\utils_md5.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_md5.c</FilePath>
             </File>
             <File>
               <FileName>utils_sha1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\digest\utils_sha1.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_sha1.c</FilePath>
             </File>
             <File>
               <FileName>utils_sha256.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\iotkit-embedded\src\utils\digest\utils_sha256.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_sha256.c</FilePath>
             </File>
             <File>
               <FileName>HAL_OS_rtthread.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\ports\rtthread\HAL_OS_rtthread.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\ports\rtthread\HAL_OS_rtthread.c</FilePath>
             </File>
             <File>
               <FileName>HAL_TCP_rtthread.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\ports\rtthread\HAL_TCP_rtthread.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\ports\rtthread\HAL_TCP_rtthread.c</FilePath>
             </File>
             <File>
               <FileName>HAL_UDP_rtthread.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\ports\rtthread\HAL_UDP_rtthread.c</FilePath>
-            </File>
-            <File>
-              <FileName>HAL_DTLS_mbedtls.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\ports\ssl\mbedtls\HAL_DTLS_mbedtls.c</FilePath>
-            </File>
-            <File>
-              <FileName>HAL_TLS_mbedtls.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-v2.0.4\ports\ssl\mbedtls\HAL_TLS_mbedtls.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\ports\rtthread\HAL_UDP_rtthread.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -847,39 +857,93 @@
           <GroupName>at_device</GroupName>
           <Files>
             <File>
-              <FileName>at_client_sample.c</FileName>
+              <FileName>at_device.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_client_sample.c</FilePath>
+              <FilePath>packages\at_device-latest\src\at_device.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>cm_backtrace</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>1</IncludeInBuild>
+              <AlwaysBuild>0</AlwaysBuild>
+              <GenerateAssemblyFile>0</GenerateAssemblyFile>
+              <AssembleAssemblyFile>0</AssembleAssemblyFile>
+              <PublicsOnly>0</PublicsOnly>
+              <StopOnExitCode>3</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls> --c99</MiscControls>
+                  <Define> </Define>
+                  <Undefine> </Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>cm_backtrace.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\CmBacktrace-v1.3.0\cm_backtrace.c</FilePath>
             </File>
             <File>
-              <FileName>at_socket_ec20.c</FileName>
+              <FileName>cmb_port.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_ec20.c</FilePath>
-            </File>
-            <File>
-              <FileName>at_socket_esp8266.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_esp8266.c</FilePath>
-            </File>
-            <File>
-              <FileName>at_socket_m26.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_m26.c</FilePath>
-            </File>
-            <File>
-              <FileName>at_socket_rw007.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_rw007.c</FilePath>
-            </File>
-            <File>
-              <FileName>at_socket_sim76xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_sim76xx.c</FilePath>
-            </File>
-            <File>
-              <FileName>at_socket_sim800c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_sim800c.c</FilePath>
+              <FilePath>packages\CmBacktrace-v1.3.0\cmb_port.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1395,11 +1459,90 @@
         </Group>
         <Group>
           <GroupName>DeviceDrivers</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>1</IncludeInBuild>
+              <AlwaysBuild>0</AlwaysBuild>
+              <GenerateAssemblyFile>0</GenerateAssemblyFile>
+              <AssembleAssemblyFile>0</AssembleAssemblyFile>
+              <PublicsOnly>0</PublicsOnly>
+              <StopOnExitCode>3</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define> </Define>
+                  <Undefine> </Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>pin.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\misc\pin.c</FilePath>
+            </File>
+            <File>
+              <FileName>mtd_nor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\mtd\mtd_nor.c</FilePath>
+            </File>
+            <File>
+              <FileName>mtd_nand.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\mtd\mtd_nand.c</FilePath>
             </File>
             <File>
               <FileName>rtc.c</FileName>
@@ -1435,6 +1578,16 @@
               <FileName>serial.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\serial\serial.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\spi\spi_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_dev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\spi\spi_dev.c</FilePath>
             </File>
             <File>
               <FileName>completion.c</FileName>
@@ -1536,11 +1689,6 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\libc\compilers\armlibc\time.c</FilePath>
             </File>
-            <File>
-              <FileName>gmtime_r.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>rt-thread\components\libc\compilers\common\gmtime_r.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1605,11 +1753,6 @@
               <FileName>af_inet_at.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\sal_socket\impl\af_inet_at.c</FilePath>
-            </File>
-            <File>
-              <FileName>proto_mbedtls.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>rt-thread\components\net\sal_socket\impl\proto_mbedtls.c</FilePath>
             </File>
             <File>
               <FileName>net_sockets.c</FileName>
@@ -1712,6 +1855,16 @@
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_usart.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_qspi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_qspi.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_hal_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.c</FilePath>
@@ -1730,6 +1883,31 @@
               <FileName>stm32f4xx_hal_sd.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sd.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_nor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_nor.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_nand.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_nand.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_fmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_fsmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fsmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_sram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</FilePath>
             </File>
           </Files>
         </Group>

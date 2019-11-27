@@ -1,0 +1,19 @@
+<!--pages/tran_login/tran_login.wxml-->
+<view class='write_container'>
+<view>运输人员登录</view>
+<view class="login_input">
+  <form bindsubmit='formSubmit'>
+    <view class='x stype'>
+      <view>用户名:</view>
+      <input name="tid" placeholder="用户名---tranMan1" />
+    </view>
+    <view class='x take_addr'>
+      <view>登录密码:</view>
+      <input name="tsec" placeholder="登录密码---123456" />
+    </view>
+    <view class="btn-area">
+      <button formType="submit">登录</button>
+    </view>
+  </form>
+</view>
+</view>

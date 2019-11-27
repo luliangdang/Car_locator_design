@@ -13,7 +13,6 @@
 
 #include <rtthread.h>
 #include <rtdevice.h>
-#include "drv_gpio.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,6 +55,7 @@ extern "C" {
 #define RT_SENSOR_VENDOR_SEMTECH       (4)  /* Semtech */
 #define RT_SENSOR_VENDOR_GOERTEK       (5)  /* Goertek */
 #define RT_SENSOR_VENDOR_MIRAMEMS      (6)  /* MiraMEMS */
+#define RT_SENSOR_VENDOR_DALLAS        (7)  /* Dallas */
 
 /* Sensor unit types */
 

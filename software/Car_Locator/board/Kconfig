@@ -183,6 +183,9 @@ menu "On-chip Peripheral Drivers"
             config BSP_USING_ADC1
                 bool "Enable ADC1"
                 default n
+			config BSP_USING_ADC2
+                bool "Enable ADC2"
+                default n
         endif
 
     menuconfig BSP_USING_I2C1
@@ -201,6 +204,14 @@ menu "On-chip Peripheral Drivers"
                 range 0 143
                 default 25
         endif
+	
+	config BSP_USING_FMC
+		bool "Enable FMC BUS"
+		default n
+		select BSP_USING_FMC
+		select RT_USING_MTD_NOR
+		select RT_USING_MTD_NAND
+		select BSP_USING_EXT_FMC_IO
 
     menuconfig BSP_USING_ONCHIP_RTC
         bool "Enable RTC"
@@ -239,7 +250,6 @@ menu "Board extended module Drivers"
 		default n
 		select AT_DEVICE_USING_A9G
 		if BSP_USING_A9G
-		
 			config AT_DEVICE_A9G_INIT_ASYN
 			bool "Enable initialize by thread"
 			default n
@@ -256,6 +266,14 @@ menu "Board extended module Drivers"
 			int "The maximum length of receive line buffer"
 			default 512
 			range 128 1024
+			
+			config A9G_SAMPLE_POWER_PIN
+            int "Power pin"
+            default -1
+
+			config A9G_SAMPLE_STATUS_PIN
+            int "Power status pin"
+            default -1
 			
 			config AT_USING_A9G_GPS
 			bool "Enable A9G GPS"

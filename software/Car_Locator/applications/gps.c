@@ -1,8 +1,15 @@
 #include "gps.h"
-#include "stdarg.h"
-#include "string.h"
-#include "math.h"
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include "lcd.h"
 
+#ifdef AT_USING_A9G_GPS
+
+#define LOG_TAG                        "gps"
+#include <at_log.h>
+
+nmea_msg gps_data;
 
 //从buf里面得到第cx个逗号所在的位置
 //返回值:0~0XFE,代表逗号所在位置的偏移.
@@ -108,14 +115,17 @@ void NMEA_GPGSV_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         p=p1+1;//切换到下一个GPGSV信息
     }
 }
-//分析GPGGA信息
+//分析GNGGA信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS数据缓冲区首地址
-void NMEA_GPGGA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+void NMEA_GNGGA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
+		char data[50] = { 0 };
+		rt_memset(data, 0, sizeof(data));
     rt_uint8_t *p1,dx;
     rt_uint8_t posx;
-    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPGGA");
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GNGGA");
+		
     posx=NMEA_Comma_Pos(p1,6);								//得到GPS状态
     if(posx!=0XFF)gpsx->gpssta=NMEA_Str2num(p1+posx,&dx);
     posx=NMEA_Comma_Pos(p1,7);								//得到用于定位的卫星数
@@ -134,7 +144,7 @@ void NMEA_GPGSA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
     p1=(rt_uint8_t*)strstr((const char *)buf,"$GPGSA");
     posx=NMEA_Comma_Pos(p1,2);								//得到定位类型
     if(posx!=0XFF)gpsx->fixmode=NMEA_Str2num(p1+posx,&dx);
-    for(i=0; i<12; i++)										//得到定位卫星编号
+    for(i=0; i<12; i++)												//得到定位卫星编号
     {
         posx=NMEA_Comma_Pos(p1,3+i);
         if(posx!=0XFF)gpsx->possl[i]=NMEA_Str2num(p1+posx,&dx);
@@ -147,16 +157,25 @@ void NMEA_GPGSA_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
     posx=NMEA_Comma_Pos(p1,17);								//得到VDOP位置精度因子
     if(posx!=0XFF)gpsx->vdop=NMEA_Str2num(p1+posx,&dx);
 }
-//分析GPRMC信息
+//分析GNRMC信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS数据缓冲区首地址
-void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+static uint16_t count = 0;
+void NMEA_GNRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
+		char data[50] = { 0 };
     rt_uint8_t *p1,dx;
     rt_uint8_t posx;
     rt_uint32_t temp;
     float rs;
-    p1=(rt_uint8_t*)strstr((const char *)buf,"GPRMC");//"$GPRMC",经常有&和GPRMC分开的情况,故只判断GPRMC.
+		int gps_longitude_int;
+		int gps_longitude_fen;
+		int gps_longitude_miao;
+		int gps_latitude_int;
+		int gps_latitude_fen;
+		int gps_latitude_miao;
+		count++;
+    p1=(rt_uint8_t*)strstr((const char *)buf,"GNRMC");//"$GNRMC",经常有&和GNRMC分开的情况,故只判断GNRMC.
     posx=NMEA_Comma_Pos(p1,1);								//得到UTC时间
     if(posx!=0XFF)
     {
@@ -165,6 +184,8 @@ void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         gpsx->utc.min=(temp/100)%100;
         gpsx->utc.sec=temp%100;
     }
+		posx=NMEA_Comma_Pos(p1,4);								//南纬还是北纬
+    if(posx!=0XFF)gpsx->nshemi=*(p1+posx);
     posx=NMEA_Comma_Pos(p1,3);								//得到纬度
     if(posx!=0XFF)
     {
@@ -172,9 +193,16 @@ void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         gpsx->latitude=temp/NMEA_Pow(10,dx+2);	//得到°
         rs=temp%NMEA_Pow(10,dx+2);				//得到'
         gpsx->latitude=gpsx->latitude*NMEA_Pow(10,5)+(rs*NMEA_Pow(10,5-dx))/60;//转换为°
+				rt_memset(data, 0, sizeof(data));
+				gps_latitude_int = gpsx->latitude / 100000;
+				gps_latitude_fen = (int)(((float)(gpsx->latitude / 100000.0)-gps_latitude_int) * 60);
+				gps_latitude_miao = (((float)(gpsx->latitude / 100000.0)-gps_latitude_int) * 60 - gps_latitude_fen)*60;
+				sprintf(data, "%2d:%2d`%2d\"  %1c\n", gps_latitude_int, gps_latitude_fen, gps_latitude_miao, gpsx->nshemi);
+				LCD_ShowString(20+88, 120, 100, 16, 16, (rt_uint8_t *)data);
     }
-    posx=NMEA_Comma_Pos(p1,4);								//南纬还是北纬
-    if(posx!=0XFF)gpsx->nshemi=*(p1+posx);
+    
+		posx=NMEA_Comma_Pos(p1,6);								//东经还是西经
+    if(posx!=0XFF)gpsx->ewhemi=*(p1+posx);
     posx=NMEA_Comma_Pos(p1,5);								//得到经度
     if(posx!=0XFF)
     {
@@ -182,9 +210,14 @@ void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         gpsx->longitude=temp/NMEA_Pow(10,dx+2);	//得到°
         rs=temp%NMEA_Pow(10,dx+2);				//得到'
         gpsx->longitude=gpsx->longitude*NMEA_Pow(10,5)+(rs*NMEA_Pow(10,5-dx))/60;//转换为°
+				rt_memset(data, 0, sizeof(data));
+				gps_longitude_int = gpsx->longitude / 100000;
+				gps_longitude_fen = (int)(((float)(gpsx->longitude / 100000.0)-gps_longitude_int) * 60);
+				gps_longitude_miao = (((float)(gpsx->longitude / 100000.0)-gps_longitude_int) * 60 - gps_longitude_fen)*60;
+				sprintf(data, "%2d:%2d`%2d\"  %1c\n", gps_longitude_int, gps_longitude_fen, gps_longitude_miao, gpsx->ewhemi);
+				LCD_ShowString(20+88, 80, 100, 16, 16, (rt_uint8_t *)data);
     }
-    posx=NMEA_Comma_Pos(p1,6);								//东经还是西经
-    if(posx!=0XFF)gpsx->ewhemi=*(p1+posx);
+    
     posx=NMEA_Comma_Pos(p1,9);								//得到UTC日期
     if(posx!=0XFF)
     {
@@ -193,20 +226,39 @@ void NMEA_GPRMC_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
         gpsx->utc.month=(temp/100)%100;
         gpsx->utc.year=2000+temp%100;
     }
+		if(count >= 200)
+		{
+				count = 0;
+				rt_memset(data, 0, sizeof(data));
+				sprintf(data, "%2d:%2d`%2d\"  %1c\n", gps_longitude_int, gps_longitude_fen, gps_longitude_miao, gpsx->ewhemi);
+				LOG_I(data);
+				rt_memset(data, 0, sizeof(data));
+				sprintf(data, "%2d:%2d`%2d\"  %1c\n", gps_latitude_int, gps_latitude_fen, gps_latitude_miao, gpsx->nshemi);
+				LOG_I(data);
+				rt_memset(data, 0, sizeof(data));
+				sprintf(data, "%.2f  km/h\n", (float)gpsx->speed / 1000);
+				LOG_I(data);
+		}
+		
 }
-//分析GPVTG信息
+//分析GNVTG信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS数据缓冲区首地址
-void NMEA_GPVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
+void NMEA_GNVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
+		char data[50] = { 0 };
     rt_uint8_t *p1,dx;
     rt_uint8_t posx;
-    p1=(rt_uint8_t*)strstr((const char *)buf,"$GPVTG");
+    p1=(rt_uint8_t*)strstr((const char *)buf,"$GNVTG");
     posx=NMEA_Comma_Pos(p1,7);								//得到地面速率
     if(posx!=0XFF)
     {
         gpsx->speed=NMEA_Str2num(p1+posx,&dx);
         if(dx<3)gpsx->speed*=NMEA_Pow(10,3-dx);	 	 		//确保扩大1000倍
+				rt_memset(data, 0, sizeof(data));
+				sprintf(data, "%.2f  km/h\n", (float)gpsx->speed / 1000);
+//				rt_kprintf(data);
+				LCD_ShowString(20+8*10, 160, 100, 16, 16, (rt_uint8_t *)data);
     }
 }
 //提取NMEA-0183信息
@@ -214,181 +266,206 @@ void NMEA_GPVTG_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 //buf:接收到的GPS数据缓冲区首地址
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf)
 {
-    NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
-    NMEA_GPGGA_Analysis(gpsx,buf);	//GPGGA解析
-    NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
-    NMEA_GPRMC_Analysis(gpsx,buf);	//GPRMC解析
-    NMEA_GPVTG_Analysis(gpsx,buf);	//GPVTG解析
+		if (strstr((const char *)buf, "$GPGSV"))
+		{
+				NMEA_GPGSV_Analysis(gpsx,buf);	//GPGSV解析
+		}
+		if (strstr((const char *)buf, "$GNGGA"))
+		{
+				NMEA_GNGGA_Analysis(gpsx,buf);	//GNGGA解析
+		}
+		if (strstr((const char *)buf, "$GPGSA"))
+		{
+				NMEA_GPGSA_Analysis(gpsx,buf);	//GPGSA解析
+		}
+		if (strstr((const char *)buf, "GNRMC"))
+		{
+				NMEA_GNRMC_Analysis(gpsx,buf);	//GNRMC解析
+		}
+    if (strstr((const char *)buf, "$GNVTG"))
+		{
+				NMEA_GNVTG_Analysis(gpsx,buf);	//GNVTG解析
+		}
 }
 
-//GPS校验和计算
-//buf:数据缓存区首地址
-//len:数据长度
-//cka,ckb:两个校验结果.
-void Ublox_CheckSum(rt_uint8_t *buf,rt_uint16_t len,rt_uint8_t* cka,rt_uint8_t*ckb)
+/* 串口接收事件标志 */
+#define UART_RX_EVENT (1 << 0)
+
+/* 事件控制块 */
+static struct rt_event event;
+/* 串口设备句柄 */
+static rt_device_t uart_device = RT_NULL;
+
+/* 回调函数 */
+static rt_err_t uart_intput(rt_device_t dev, rt_size_t size)
 {
-    rt_uint16_t i;
-    *cka=0;
-    *ckb=0;
-    for(i=0; i<len; i++)
+    /* 发送事件 */
+    rt_event_send(&event, UART_RX_EVENT);
+    
+    return RT_EOK;
+}
+
+/* uart device get char */
+static rt_uint8_t uart_getchar(void)
+{
+    rt_uint32_t e;
+    rt_uint8_t ch;
+    
+    /* 读取1字节数据 */
+    while (rt_device_read(uart_device, 0, &ch, 1) != 1)
     {
-        *cka=*cka+buf[i];
-        *ckb=*ckb+*cka;
+				/* 接收事件 */
+				rt_event_recv(&event, UART_RX_EVENT,RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,RT_WAITING_FOREVER, &e);
     }
+
+    return ch;
 }
-/////////////////////////////////////////UBLOX 配置代码/////////////////////////////////////
-//检查CFG配置执行情况
-//返回值:0,ACK成功
-//       1,接收超时错误
-//       2,没有找到同步字符
-//       3,接收到NACK应答
-rt_uint8_t Ublox_Cfg_Ack_Check(void)
+
+
+static void uart_putchar(const rt_uint8_t c)
 {
-    rt_uint16_t len=0,i;
-    rt_uint8_t rval=0;
-    while((USART3_RX_STA&0X8000)==0 && len<100)//等待接收到应答
+    rt_size_t len = 0;
+    rt_uint32_t timeout = 0;
+    do
     {
-        len++;
-        rt_thread_delay(5);
+        len = rt_device_write(uart_device, 0, &c, 1);
+        timeout++;
     }
-    if(len<250)   	//超时错误.
+    while (len != 1 && timeout < 500);
+}
+
+static void uart_putstring(const rt_uint8_t *s)
+{
+    while(*s)
     {
-        len=USART3_RX_STA&0X7FFF;	//此次接收到的数据长度
-        for(i=0; i<len; i++)if(USART3_RX_BUF[i]==0XB5)break; //查找同步字符 0XB5
-        if(i==len)rval=2;						//没有找到同步字符
-        else if(USART3_RX_BUF[i+3]==0X00)rval=3;//接收到NACK应答
-        else rval=0;	   						//接收到ACK应答
-    } else rval=1;								//接收超时错误
-    USART3_RX_STA=0;							//清除接收
-    return rval;
-}
-//配置保存
-//将当前配置保存在外部EEPROM里面
-//返回值:0,执行成功;1,执行失败.
-rt_uint8_t Ublox_Cfg_Cfg_Save(void)
-{
-    rt_uint8_t i;
-    _ublox_cfg_cfg *cfg_cfg=(_ublox_cfg_cfg *)USART3_TX_BUF;
-    cfg_cfg->header=0X62B5;		//cfg header
-    cfg_cfg->id=0X0906;			//cfg cfg id
-    cfg_cfg->dlength=13;		//数据区长度为13个字节.
-    cfg_cfg->clearmask=0;		//清除掩码为0
-    cfg_cfg->savemask=0XFFFF; 	//保存掩码为0XFFFF
-    cfg_cfg->loadmask=0; 		//加载掩码为0
-    cfg_cfg->devicemask=4; 		//保存在EEPROM里面
-    Ublox_CheckSum((rt_uint8_t*)(&cfg_cfg->id),sizeof(_ublox_cfg_cfg)-4,&cfg_cfg->cka,&cfg_cfg->ckb);
-    Ublox_Send_Date((rt_uint8_t*)cfg_cfg,sizeof(_ublox_cfg_cfg));//发送数据给NEO-6M
-    for(i=0; i<6; i++)if(Ublox_Cfg_Ack_Check()==0)break;		//EEPROM写入需要比较久时间,所以连续判断多次
-    return i==6?1:0;
-}
-//配置NMEA输出信息格式
-//msgid:要操作的NMEA消息条目,具体见下面的参数表
-//      00,GPGGA;01,GPGLL;02,GPGSA;
-//		03,GPGSV;04,GPRMC;05,GPVTG;
-//		06,GPGRS;07,GPGST;08,GPZDA;
-//		09,GPGBS;0A,GPDTM;0D,GPGNS;
-//uart1set:0,输出关闭;1,输出开启.
-//返回值:0,执行成功;其他,执行失败.
-rt_uint8_t Ublox_Cfg_Msg(rt_uint8_t msgid,rt_uint8_t uart1set)
-{
-    _ublox_cfg_msg *cfg_msg=(_ublox_cfg_msg *)USART3_TX_BUF;
-    cfg_msg->header=0X62B5;		//cfg header
-    cfg_msg->id=0X0106;			//cfg msg id
-    cfg_msg->dlength=8;			//数据区长度为8个字节.
-    cfg_msg->msgclass=0XF0;  	//NMEA消息
-    cfg_msg->msgid=msgid; 		//要操作的NMEA消息条目
-    cfg_msg->iicset=1; 			//默认开启
-    cfg_msg->uart1set=uart1set; //开关设置
-    cfg_msg->uart2set=1; 	 	//默认开启
-    cfg_msg->usbset=1; 			//默认开启
-    cfg_msg->spiset=1; 			//默认开启
-    cfg_msg->ncset=1; 			//默认开启
-    Ublox_CheckSum((rt_uint8_t*)(&cfg_msg->id),sizeof(_ublox_cfg_msg)-4,&cfg_msg->cka,&cfg_msg->ckb);
-    Ublox_Send_Date((rt_uint8_t*)cfg_msg,sizeof(_ublox_cfg_msg));//发送数据给NEO-6M
-    return Ublox_Cfg_Ack_Check();
-}
-//配置NMEA输出信息格式
-//baudrate:波特率,4800/9600/19200/38400/57600/115200/230400
-//返回值:0,执行成功;其他,执行失败(这里不会返回0了)
-rt_uint8_t Ublox_Cfg_Prt(rt_uint32_t baudrate)
-{
-    _ublox_cfg_prt *cfg_prt=(_ublox_cfg_prt *)USART3_TX_BUF;
-    cfg_prt->header=0X62B5;		//cfg header
-    cfg_prt->id=0X0006;			//cfg prt id
-    cfg_prt->dlength=20;		//数据区长度为20个字节.
-    cfg_prt->portid=1;			//操作串口1
-    cfg_prt->reserved=0;	 	//保留字节,设置为0
-    cfg_prt->txready=0;	 		//TX Ready设置为0
-    cfg_prt->mode=0X08D0; 		//8位,1个停止位,无校验位
-    cfg_prt->baudrate=baudrate; //波特率设置
-    cfg_prt->inprotomask=0X0007;//0+1+2
-    cfg_prt->outprotomask=0X0007;//0+1+2
-    cfg_prt->reserved4=0; 		//保留字节,设置为0
-    cfg_prt->reserved5=0; 		//保留字节,设置为0
-    Ublox_CheckSum((rt_uint8_t*)(&cfg_prt->id),sizeof(_ublox_cfg_prt)-4,&cfg_prt->cka,&cfg_prt->ckb);
-    Ublox_Send_Date((rt_uint8_t*)cfg_prt,sizeof(_ublox_cfg_prt));//发送数据给NEO-6M
-    rt_thread_delay(200);				//等待发送完成
-    usart3_init(42,baudrate);	//重新初始化串口3
-    return Ublox_Cfg_Ack_Check();//这里不会反回0,因为UBLOX发回来的应答在串口重新初始化的时候已经被丢弃了.
-}
-//配置UBLOX NEO-6的时钟脉冲输出
-//interval:脉冲间隔(us)
-//length:脉冲宽度(us)
-//status:脉冲配置:1,高电平有效;0,关闭;-1,低电平有效.
-//返回值:0,发送成功;其他,发送失败.
-rt_uint8_t Ublox_Cfg_Tp(rt_uint32_t interval,rt_uint32_t length,signed char status)
-{
-    _ublox_cfg_tp *cfg_tp=(_ublox_cfg_tp *)USART3_TX_BUF;
-    cfg_tp->header=0X62B5;		//cfg header
-    cfg_tp->id=0X0706;			//cfg tp id
-    cfg_tp->dlength=20;			//数据区长度为20个字节.
-    cfg_tp->interval=interval;	//脉冲间隔,us
-    cfg_tp->length=length;		//脉冲宽度,us
-    cfg_tp->status=status;	   	//时钟脉冲配置
-    cfg_tp->timeref=0;			//参考UTC 时间
-    cfg_tp->flags=0;			//flags为0
-    cfg_tp->reserved=0;		 	//保留位为0
-    cfg_tp->antdelay=820;    	//天线延时为820ns
-    cfg_tp->rfdelay=0;    		//RF延时为0ns
-    cfg_tp->userdelay=0;    	//用户延时为0ns
-    Ublox_CheckSum((rt_uint8_t*)(&cfg_tp->id),sizeof(_ublox_cfg_tp)-4,&cfg_tp->cka,&cfg_tp->ckb);
-    Ublox_Send_Date((rt_uint8_t*)cfg_tp,sizeof(_ublox_cfg_tp));//发送数据给NEO-6M
-    return Ublox_Cfg_Ack_Check();
-}
-//配置UBLOX NEO-6的更新速率
-//measrate:测量时间间隔，单位为ms，最少不能小于200ms（5Hz）
-//reftime:参考时间，0=UTC Time；1=GPS Time（一般设置为1）
-//返回值:0,发送成功;其他,发送失败.
-rt_uint8_t Ublox_Cfg_Rate(rt_uint16_t measrate,rt_uint8_t reftime)
-{
-    _ublox_cfg_rate *cfg_rate=(_ublox_cfg_rate *)USART3_TX_BUF;
-    if(measrate<200)return 1;	//小于200ms，直接退出
-    cfg_rate->header=0X62B5;	//cfg header
-    cfg_rate->id=0X0806;	 	//cfg rate id
-    cfg_rate->dlength=6;	 	//数据区长度为6个字节.
-    cfg_rate->measrate=measrate;//脉冲间隔,us
-    cfg_rate->navrate=1;		//导航速率（周期），固定为1
-    cfg_rate->timeref=reftime; 	//参考时间为GPS时间
-    Ublox_CheckSum((rt_uint8_t*)(&cfg_rate->id),sizeof(_ublox_cfg_rate)-4,&cfg_rate->cka,&cfg_rate->ckb);
-    Ublox_Send_Date((rt_uint8_t*)cfg_rate,sizeof(_ublox_cfg_rate));//发送数据给NEO-6M
-    return Ublox_Cfg_Ack_Check();
-}
-//发送一批数据给Ublox NEO-6M，这里通过串口3发送
-//dbuf：数据缓存首地址
-//len：要发送的字节数
-void Ublox_Send_Date(rt_uint8_t* dbuf,rt_uint16_t len)
-{
-    rt_uint16_t j;
-    for(j=0; j<len; j++) //循环发送数据
-    {
-        while((USART3->SR&0X40)==0);//循环发送,直到发送完毕
-        USART3->DR=dbuf[j];
+        uart_putchar(*s++);
     }
 }
 
+/* open the uart device */
+static rt_err_t uart_open(rt_device_t device)
+{
+    rt_err_t res;
 
+    if (device != RT_NULL)
+    {
+        res = rt_device_set_rx_indicate(device, uart_intput);
+        /* 检查返回值 */
+        if (res != RT_EOK)
+        {
+            rt_kprintf("set %s rx indicate error.%d\n",device->parent.name,res);
+            return -RT_ERROR;
+        }
 
+        /* 打开设备，以可读写、中断方式 */
+        res = rt_device_open(device, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX );       
+        /* 检查返回值 */
+        if (res != RT_EOK)
+        {
+            rt_kprintf("open %s device error.%d\n",device->parent.name,res);
+            return -RT_ERROR;
+        }
+        
+        /* 初始化事件对象 */
+        rt_event_init(&event, "event", RT_IPC_FLAG_FIFO); 
+        
+        return RT_EOK;
+    }
+    else
+    {
+        rt_kprintf("can't open %s device.\n",device->parent.name);
+        return -RT_ERROR;
+    }
+}
 
+/* read device data */
+static void data_read(uint8_t* buff, int len)
+{
+    rt_uint8_t uart_rx_byte;
+    rt_uint8_t count = 0;
+    
+    do
+		{
+        uart_rx_byte = uart_getchar();
+        buff[count] = uart_rx_byte;
+        count ++;       
+    }while((uart_rx_byte != '\n') && (count <= len));
+    
+    buff[count] = 0;
+}
 
+extern nmea_msg gps_data;
+void gps_thread_entry(void *parameter)
+{
+    uint8_t line[GPS_DEVICE_RECV_BUFF_LEN];
+		
+    while(1)
+    {
+        data_read(line, GPS_DEVICE_RECV_BUFF_LEN);
+//				rt_kprintf("%s", line);
+				
+				GPS_Analysis(&gps_data, line);
+				rt_thread_mdelay(10);
+    }
+}
 
+/* gps port initial */
+rt_err_t gps_init(void)
+{
+    rt_thread_t tid;
+    
+    /* 查找系统中的串口设备 */
+    uart_device = rt_device_find(GPS_UART_NAME);
+    
+    if (RT_NULL == uart_device)
+    {
+        rt_kprintf(" find device %s failed!\n",GPS_UART_NAME);  
+        return RT_EINVAL;
+    }
+    struct serial_configure gps_use_config = 
+    {
+        BAUD_RATE_9600,   /* 9600 bits/s */
+        DATA_BITS_8,      /* 8 databits */
+        STOP_BITS_1,      /* 1 stopbit */
+        PARITY_NONE,      /* No parity  */ 
+        BIT_ORDER_LSB,    /* LSB first sent */
+        NRZ_NORMAL,       /* Normal mode */
+        1024,             /* Buffer size */
+        0   
+    };
+
+    if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
+    {
+        rt_kprintf("uart config failed.\n");
+        return RT_ERROR;
+    }
+
+    if (uart_open(uart_device) != RT_EOK)
+    {
+        rt_kprintf("uart open error.\n");
+        return RT_ERROR;
+    }
+    if (RT_EOK != rt_device_control(uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&gps_use_config))
+    {
+        rt_kprintf("uart config failed.\n");
+        return RT_ERROR;
+    }
+
+    tid = rt_thread_create("gps_recive", 
+                            gps_thread_entry,
+                            RT_NULL,
+                            2048,
+                            8,
+                            200);
+    if (tid == RT_NULL)
+    {
+        return RT_ERROR;
+    }
+		
+    rt_thread_startup(tid);
+
+    return RT_EOK;
+}
+INIT_DEVICE_EXPORT(gps_init);
+#endif /* AT_USING_A9G_GPS */
 

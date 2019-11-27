@@ -1,0 +1,46 @@
+/* pages/user_menu/user_menu.wxss */
+.wbtn_hover {
+  background-color: pink;
+}
+.cbtn_hover {
+  background-color: pink;
+}
+
+.userinfo {
+  padding: 40rpx;
+  display: block;
+  background: linear-gradient(to right top,#6183dd,#6e42d3);
+  text-align: center;
+  border-radius: 10rpx;
+}
+ 
+.userinfo-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 130rpx;
+  overflow: hidden;
+  margin: auto;
+  border: 6rpx solid #ffffff;
+  display: inline-block;
+}
+
+.write {
+  background: #ffffff;
+  height: 150rpx;
+  width: 330rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 0 10rpx 0 #e1e1e1;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+.check {
+  background: #ffffff;
+  height: 150rpx;
+  width: 330rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 0 10rpx 0 #e1e1e1;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}

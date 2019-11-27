@@ -1,0 +1,39 @@
+.contain{
+  display: flex;
+  flex-direction: column;
+  background: #e1e1e1;
+  
+}
+.order-id {
+  display: flex;
+  flex-direction: row;
+  border-bottom: solid 1px #e1e1e1;
+  margin: 20rpx;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 30rpx;
+  background: #ffffff;
+  font-size: 30rpx;
+  border-radius: 10rpx;
+}
+.order_detail {
+  display: flex;
+  flex-direction: column;
+  margin: 20rpx;
+  border-radius: 10rpx;
+}
+.divLine{
+ background: #E0E3DA;
+ width: 100%;
+ height: 5rpx;
+}
+.item-image {
+  display:flex;
+  justify-content: center;
+  height: 520rpx;
+  width: 100%;
+}
+.lldata {
+  display: flex;
+  flex-direction: column;
+}

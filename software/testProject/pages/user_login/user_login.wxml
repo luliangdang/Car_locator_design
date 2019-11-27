@@ -1,0 +1,19 @@
+<!--pages/user_login/user_login.wxml-->
+<view class='write_container'>
+<view>用户登录</view>
+<view class="login_input">
+  <form bindsubmit='formSubmit'>
+    <view class='x stype'>
+      <view>用户名:</view>
+      <input name="uid" placeholder="用户名" />
+    </view>
+    <view class='x take_addr'>
+      <view>登录密码:</view>
+      <input name="usec" placeholder="登录密码" />
+    </view>
+    <view class="btn-area">
+      <button formType="submit">登录</button>
+    </view>
+  </form>
+</view>
+</view>

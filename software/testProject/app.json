@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "pages/logs/logs",
+    "pages/trans_order/trans_order",
+    "pages/user_menu/user_menu",
+    "pages/write_order/write_order",
+    "pages/check_order/check_order",
+    "pages/tips/tips",
+    "pages/order_tip/order_tip",
+    "pages/now_order/now_order",
+    "pages/tran_login/tran_login",
+    "pages/user_login/user_login",
+    "pages/order_detail/order_detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
+}

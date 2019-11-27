@@ -7,9 +7,14 @@ src     = Split("""
 main.c
 key.c
 led.c
+at_device_a9g.c
 at_socket_a9g.c
+at_sample_a9g.c
 minmea.c
 client_server.c
+lcd.c
+rc522.c
+gps.c
 """)
 
 

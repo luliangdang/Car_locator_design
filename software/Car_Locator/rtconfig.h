@@ -39,8 +39,9 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart1"
-#define RT_VER_NUM 0x40001
+#define RT_VER_NUM 0x40002
 #define ARCH_ARM
+#define RT_USING_CPU_FFS
 #define ARCH_ARM_CORTEX_M
 #define ARCH_ARM_CORTEX_M4
 
@@ -74,8 +75,8 @@
 
 #define RT_USING_DFS
 #define DFS_USING_WORKDIR
-#define DFS_FILESYSTEMS_MAX 2
-#define DFS_FILESYSTEM_TYPES_MAX 2
+#define DFS_FILESYSTEMS_MAX 5
+#define DFS_FILESYSTEM_TYPES_MAX 5
 #define DFS_FD_MAX 16
 #define RT_USING_DFS_ELMFAT
 
@@ -87,7 +88,7 @@
 #define RT_DFS_ELM_USE_LFN 3
 #define RT_DFS_ELM_MAX_LFN 255
 #define RT_DFS_ELM_DRIVES 2
-#define RT_DFS_ELM_MAX_SECTOR_SIZE 512
+#define RT_DFS_ELM_MAX_SECTOR_SIZE 4096
 #define RT_DFS_ELM_REENTRANT
 #define RT_USING_DFS_DEVFS
 
@@ -102,6 +103,8 @@
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
+#define RT_USING_MTD_NOR
+#define RT_USING_MTD_NAND
 #define RT_USING_RTC
 #define RT_USING_SDIO
 #define RT_SDIO_STACK_SIZE 512
@@ -110,9 +113,7 @@
 #define RT_MMCSD_THREAD_PREORITY 22
 #define RT_MMCSD_MAX_PARTITION 16
 #define RT_SDIO_DEBUG
-
-/* Using WiFi */
-
+#define RT_USING_SPI
 
 /* Using USB */
 
@@ -131,7 +132,6 @@
 /* protocol stack implement */
 
 #define SAL_USING_AT
-#define SAL_USING_TLS
 #define SAL_USING_POSIX
 
 /* Network interface device */
@@ -141,11 +141,10 @@
 #define NETDEV_USING_PING
 #define NETDEV_USING_NETSTAT
 #define NETDEV_USING_AUTO_DEFAULT
+#define NETDEV_IPV4 1
+#define NETDEV_IPV6 0
 
 /* light weight TCP/IP stack */
-
-
-/* Modbus master and slave stack */
 
 
 /* AT commands */
@@ -153,12 +152,12 @@
 #define RT_USING_AT
 #define AT_DEBUG
 #define AT_USING_CLIENT
-#define AT_CLIENT_NUM_MAX 5
+#define AT_CLIENT_NUM_MAX 1
 #define AT_USING_SOCKET
 #define AT_USING_CLI
 #define AT_PRINT_RAW_CMD
 #define AT_CMD_MAX_LEN 512
-#define AT_SW_VERSION_NUM 0x10200
+#define AT_SW_VERSION_NUM 0x10300
 
 /* VBUS(Virtual Software BUS) */
 
@@ -178,16 +177,12 @@
 
 /* Wiced WiFi */
 
-#define PKG_USING_NETUTILS
-#define PKG_USING_NETUTILS_V110
 #define PKG_USING_AT_DEVICE
-#define PKG_AT_INIT_BY_THREAD
-#define AT_DEVICE_NOT_SELECTED
 #define AT_DEVICE_SOCKETS_NUM 8
 #define AT_DEVICE_NAME "uart3"
 #define AT_DEVICE_RECV_BUFF_LEN 512
-#define PKG_USING_AT_DEVICE_V150
-#define PKG_AT_DEVICE_VER_NUM 0x10500
+#define PKG_USING_AT_DEVICE_LATEST_VERSION
+#define PKG_AT_DEVICE_VER_NUM 0x99999
 
 /* IoT Cloud */
 
@@ -200,11 +195,8 @@
 #define PKG_USING_ALI_IOTKIT_IS_LINKDEVELOP
 #define PKG_USING_ALI_IOTKIT_MQTT
 #define PKG_USING_ALI_IOTKIT_MQTT_DIRECT
-#define PKG_USING_ALI_IOTKIT_MQTT_TLS
-#define PKG_USING_ALI_IOTKIT_OTA
-#define PKG_USING_ALI_IOTKIT_MQTT_OTA
-#define PKG_USING_ALI_IOTKIT_V20004
-#define PKG_ALI_IOTKIT_VER_NUM 0x20004
+#define PKG_USING_ALI_IOTKIT_V20003
+#define PKG_ALI_IOTKIT_VER_NUM 0x20003
 
 /* security packages */
 
@@ -227,6 +219,11 @@
 
 /* tools packages */
 
+#define PKG_USING_CMBACKTRACE
+#define PKG_CMBACKTRACE_PLATFORM_M4
+#define PKG_CMBACKTRACE_DUMP_STACK
+#define PKG_CMBACKTRACE_PRINT_CHINESE
+#define PKG_USING_CMBACKTRACE_V10300
 
 /* system packages */
 
@@ -258,15 +255,22 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
+#define BSP_UART1_RX_USING_DMA
 #define BSP_USING_UART2
+#define BSP_UART2_RX_USING_DMA
 #define BSP_USING_UART3
 #define BSP_UART3_RX_USING_DMA
+#define BSP_USING_SPI
+#define BSP_USING_SPI1
+#define BSP_USING_FMC
 #define BSP_USING_SDIO
 
 /* Board extended module Drivers */
 
-#define BSP_USING_A9G
+#define AT_DEVICE_USING_A9G
 #define AT_DEVICE_A9G_INIT_ASYN
+#define A9G_SAMPLE_POWER_PIN -1
+#define A9G_SAMPLE_STATUS_PIN -1
 #define AT_USING_A9G_GPS
 #define GPS_UART_NAME "uart2"
 #define GPS_DEVICE_RECV_BUFF_LEN 512

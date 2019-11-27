@@ -1387,12 +1387,11 @@ rt_int32_t sdio_unregister_driver(struct rt_sdio_driver *driver)
             rt_free(sd);
         }
     }
-
     return 0;
 }
 
 void rt_sdio_init(void)
 {
-
+		
 }
 
