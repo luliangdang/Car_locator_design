@@ -1,18 +1,6 @@
 #ifndef __GPS_H
 #define __GPS_H	 
 #include <board.h>
-//////////////////////////////////////////////////////////////////////////////////	 
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK STM32F407开发板
-//ATK-NEO-6M GPS模块驱动代码	   
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//修改日期:2014/10/26
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2014-2024
-//All rights reserved							  
-////////////////////////////////////////////////////////////////////////////////// 	   
 
 //GPS NMEA-0183协议重要参数结构体定义 
 //卫星信息
@@ -55,7 +43,7 @@ __packed typedef struct
 	rt_uint16_t speed;					//地面速率,放大了1000倍,实际除以10.单位:0.001公里/小时	 
 }nmea_msg;
 
-static nmea_msg gps_data;
+extern nmea_msg gps_data;
 
 int NMEA_Str2num(rt_uint8_t *buf,rt_uint8_t*dx);
 void GPS_Analysis(nmea_msg *gpsx,rt_uint8_t *buf);

@@ -1,0 +1,9 @@
+/* pages/write_order/write_order.wxss */
+.write_container{
+  display: flex;
+  flex-direction: column;
+}
+.x{
+  display: flex;
+  flex-direction: row;
+}

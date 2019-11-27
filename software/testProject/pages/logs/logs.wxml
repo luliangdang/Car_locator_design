@@ -1,0 +1,17 @@
+<!--logs.wxml-->
+<view class="container log-list">
+  <view class="homeImg">
+    <image class="item-image" src="{{img}}" />
+  </view>
+  <view class='panel-between item-center pa-30 ra-10'>
+    <button bindtap="transenter">
+      <text>物流运输人员登录入口</text>
+    </button>
+  </view>
+  <view class="panel-between item-center pa-30 ra-10">
+    <button bindtap="consumerenter">
+      <text>用户登录入口</text>
+    </button>
+  </view>
+</view>
+

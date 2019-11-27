@@ -15,6 +15,8 @@
 #include <stm32f4xx.h>
 #include "drv_common.h"
 #include "drv_gpio.h"
+#include "drv_spi.h"
+#include "drv_usart.h"
 #include "led.h"
 #include "key.h"
 

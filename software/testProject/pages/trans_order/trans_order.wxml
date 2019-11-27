@@ -1,0 +1,51 @@
+<!--订单详情-->
+<view class="transImg">
+    <image class="item-image" src="{{img}}" />
+</view>
+<view class="contain">
+  <view class='order-id'>
+    <text>订单号:</text>
+    <text>{{order.order_id}}</text>
+  </view>
+
+  <view class="order_detail">
+  <view class="panel panel-between item-center border">
+    <text>取货地点:</text>
+    <text>{{order.start_place}}</text>
+  </view>
+  
+  <view class="divLine"></view>
+  <view class="panel panel-between item-center border">
+  <view>当前位置</view>
+  <view class="fo-12 lldata">
+    <text>纬度:{{order.car.car_position_wd}}</text>
+    <text>经度:{{order.car.car_position_jd}}</text>
+    <text>海拔:{{order.car.car_position_hb}}</text>
+  </view>
+  <view class="btnlook">
+    <button bindtap="pointToLook">
+      <text>点击查看位置</text>
+    </button>
+  </view>
+  </view>
+  
+
+  <view class="divLine"></view>
+  <view class="panel panel-between item-center border">
+    <text>目的地:</text>
+    <text>{{order.end_place}}</text>
+  </view>
+  
+  <view class="divLine"></view>
+  <view class="panel panel-between item-center border">
+    <text>仓储位置:</text>
+    <text>{{order.depot_place}}</text>
+  </view>
+  
+  <view class="divLine"></view>
+  <view class="panel panel-between item-center border">
+    <text>服务类型:</text>
+    <text>{{order.service_type}}</text>
+  </view>
+  </view>
+</view>

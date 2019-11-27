@@ -316,7 +316,29 @@ int dfs_romfs_init(void)
 {
     /* register rom file system */
     dfs_register(&_romfs);
+		/* mount ROMFS as root directory */
+    if (dfs_mount(RT_NULL, "/", "rom", 0, (const void *)&romfs_root) == 0)
+    {
+        rt_kprintf("ROMFS File System initialized!\n");
+    }
+    else
+    {
+        rt_kprintf("ROMFS File System initialized Failed!\n");
+    }
     return 0;
 }
 INIT_COMPONENT_EXPORT(dfs_romfs_init);
 
+int romfs_init(void)
+{
+    /* mount ROMFS as root directory */
+    if (dfs_mount(RT_NULL, "/", "rom", 0, (const void *)&romfs_root) == 0)
+    {
+        rt_kprintf("ROMFS File System initialized!\n");
+    }
+    else
+    {
+        rt_kprintf("ROMFS File System initialized Failed!\n");
+    }
+}
+//INIT_ENV_EXPORT(romfs_init);

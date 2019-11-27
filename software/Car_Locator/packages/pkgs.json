@@ -1,12 +1,12 @@
 [
  {
   "path": "/packages/iot/at_device", 
-  "ver": "v1.5.0", 
+  "ver": "latest", 
   "name": "AT_DEVICE"
  }, 
  {
   "path": "/packages/iot/iot_cloud/ali-iotkit", 
-  "ver": "latest", 
+  "ver": "v2.0.3", 
   "name": "ALI_IOTKIT"
  }, 
  {

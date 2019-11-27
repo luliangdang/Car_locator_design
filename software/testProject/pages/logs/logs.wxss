@@ -1,0 +1,27 @@
+page{
+  background-color: #f7f7f7
+}
+.log-list {
+  display: flex;
+  flex-direction: column;
+  padding: 20rpx;
+}
+.item-image {
+  display: block;
+  height: 320rpx;
+  width: 720rpx;
+  border-radius: 20%;
+  margin-top: 40rpx
+}
+.consumer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 365rpx;
+  padding: 20rpx;
+}
+.log-list text {
+  font-size: 36rpx;
+}
+

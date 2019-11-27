@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_projx.xsd">
+
   <SchemaVersion>2.1</SchemaVersion>
+
   <Header>### uVision Project, (C) Keil Software</Header>
+
   <Targets>
     <Target>
       <TargetName>rt-thread</TargetName>
@@ -11,33 +14,33 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F407ZGTx</Device>
+          <Device>STM32F407ZE</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.13.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
-          <Cpu>IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
-          <FlashUtilSpec />
-          <StartupFile />
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407ZGTx$CMSIS\Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
+          <Cpu>IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x80000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
+          <FlashUtilSpec></FlashUtilSpec>
+          <StartupFile></StartupFile>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407ZE$Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32F407ZGTx$Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</RegisterFile>
-          <MemoryEnv />
-          <Cmp />
-          <Asm />
-          <Linker />
-          <OHString />
-          <InfinionOptionDll />
-          <SLE66CMisc />
-          <SLE66AMisc />
-          <SLE66LinkerMisc />
-          <SFDFile>$$Device:STM32F407ZGTx$CMSIS\SVD\STM32F40x.svd</SFDFile>
+          <RegisterFile>$$Device:STM32F407ZE$Device\Include\stm32f4xx.h</RegisterFile>
+          <MemoryEnv></MemoryEnv>
+          <Cmp></Cmp>
+          <Asm></Asm>
+          <Linker></Linker>
+          <OHString></OHString>
+          <InfinionOptionDll></InfinionOptionDll>
+          <SLE66CMisc></SLE66CMisc>
+          <SLE66AMisc></SLE66AMisc>
+          <SLE66LinkerMisc></SLE66LinkerMisc>
+          <SFDFile>$$Device:STM32F407ZE$SVD\STM32F40x.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath />
-          <IncludePath />
-          <LibPath />
-          <RegisterFilePath />
-          <DBRegisterFilePath />
+          <BinPath></BinPath>
+          <IncludePath></IncludePath>
+          <LibPath></LibPath>
+          <RegisterFilePath></RegisterFilePath>
+          <DBRegisterFilePath></DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -59,8 +62,8 @@
           <BeforeCompile>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name />
-            <UserProg2Name />
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopU1X>0</nStopU1X>
@@ -69,8 +72,8 @@
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name />
-            <UserProg2Name />
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopB1X>0</nStopB1X>
@@ -80,14 +83,14 @@
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
             <UserProg1Name>fromelf --bin !L --output rtthread.bin</UserProg1Name>
-            <UserProg2Name />
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopA1X>0</nStopA1X>
             <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
-          <SVCSIdString />
+          <SVCSIdString></SVCSIdString>
         </TargetCommonOption>
         <CommonProperty>
           <UseCPPCompiler>0</UseCPPCompiler>
@@ -101,8 +104,8 @@
           <AssembleAssemblyFile>0</AssembleAssemblyFile>
           <PublicsOnly>0</PublicsOnly>
           <StopOnExitCode>3</StopOnExitCode>
-          <CustomArgument />
-          <IncludeLibraryModules />
+          <CustomArgument></CustomArgument>
+          <IncludeLibraryModules></IncludeLibraryModules>
           <ComprImg>1</ComprImg>
         </CommonProperty>
         <DllOption>
@@ -135,11 +138,11 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
-          <Flash4 />
-          <pFcarmOut />
-          <pFcarmGrp />
-          <pFcArmRoot />
+          <Flash3></Flash3>
+          <Flash4></Flash4>
+          <pFcarmOut></pFcarmOut>
+          <pFcarmGrp></pFcarmGrp>
+          <pFcArmRoot></pFcArmRoot>
           <FcArmLst>0</FcArmLst>
         </Utilities>
         <TargetArmAds>
@@ -172,7 +175,7 @@
             <RvctClst>0</RvctClst>
             <GenPPlst>0</GenPPlst>
             <AdsCpuType>"Cortex-M4"</AdsCpuType>
-            <RvctDeviceName />
+            <RvctDeviceName></RvctDeviceName>
             <mOS>0</mOS>
             <uocRom>0</uocRom>
             <uocRam>0</uocRam>
@@ -206,7 +209,7 @@
             <Ra1Chk>0</Ra1Chk>
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
-            <Im1Chk>0</Im1Chk>
+            <Im1Chk>1</Im1Chk>
             <Im2Chk>1</Im2Chk>
             <OnChipMemories>
               <Ocm1>
@@ -247,7 +250,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -272,7 +275,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -305,7 +308,7 @@
                 <Size>0x10000</Size>
               </OCR_RVCT10>
             </OnChipMemories>
-            <RvctStartVector />
+            <RvctStartVector></RvctStartVector>
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
@@ -332,10 +335,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls />
-              <Define>USE_HAL_DRIVER, STM32F407xx, RT_USING_ARM_LIBC</Define>
-              <Undefine />
-              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;packages\ali-iotkit-latest\iotkit-embedded\src\infra;packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl;packages\ali-iotkit-latest\iotkit-embedded\src\mqtt;packages\ali-iotkit-latest\iotkit-embedded\src\dev_model;packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\client;packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\server;packages\ali-iotkit-latest\iotkit-embedded\src\dev_sign;packages\ali-iotkit-latest\iotkit-embedded\wrappers;packages\at_device-v1.5.0;packages\CmBacktrace-v1.3.0;packages\mbedtls-v2.7.10\mbedtls\include;packages\mbedtls-v2.7.10\ports\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\dfs\filesystems\elmfat;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\at\include;rt-thread\components\net\at\at_socket;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
+              <MiscControls></MiscControls>
+              <Define>MQTT_DIRECT, IOTX_NET_INIT_WITH_PK_EXT, MQTT_COMM_ENABLED, USE_HAL_DRIVER, STM32F407xx, IOTX_WITHOUT_TLS, IOTX_WITHOUT_ITLS, RT_USING_ARM_LIBC, _PLATFORM_IS_RTTHREAD_</Define>
+              <Undefine></Undefine>
+              <IncludePath>.;rt-thread\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\log\LITE-log;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\sdk-impl;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\sdk-impl\exports;packages\ali-iotkit-v2.0.3\iotkit-embedded\src\sdk-impl\imports;packages\at_device-latest\inc;packages\CmBacktrace-v1.3.0;packages\mbedtls-v2.7.10\mbedtls\include;packages\mbedtls-v2.7.10\ports\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\dfs\filesystems\elmfat;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\net\at\include;rt-thread\components\net\at\at_socket;rt-thread\components\net\netdev\include;rt-thread\components\net\sal_socket\include;rt-thread\components\net\sal_socket\include\socket;rt-thread\components\net\sal_socket\impl;rt-thread\components\net\sal_socket\include\dfs_net;rt-thread\components\net\sal_socket\include\dfs_net\sys_select;rt-thread\components\net\sal_socket\include\socket\sys_socket;libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Inc;libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Include;libraries\STM32F4xx_HAL\CMSIS\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -350,10 +353,10 @@
             <useXO>0</useXO>
             <uClangAs>0</uClangAs>
             <VariousControls>
-              <MiscControls />
-              <Define />
-              <Undefine />
-              <IncludePath />
+              <MiscControls></MiscControls>
+              <Define></Define>
+              <Undefine></Undefine>
+              <IncludePath></IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
@@ -365,13 +368,13 @@
             <useFile>0</useFile>
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
-            <pXoBase />
+            <pXoBase></pXoBase>
             <ScatterFile>.\board\linker_scripts\link.sct</ScatterFile>
-            <IncludeLibs />
-            <IncludeLibsPath />
-            <Misc />
-            <LinkerInputFile />
-            <DisabledWarnings />
+            <IncludeLibs></IncludeLibs>
+            <IncludeLibsPath></IncludeLibsPath>
+            <Misc></Misc>
+            <LinkerInputFile></LinkerInputFile>
+            <DisabledWarnings></DisabledWarnings>
           </LDads>
         </TargetArmAds>
       </TargetOption>
@@ -384,99 +387,71 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\src\clock.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>components.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\components.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cpu.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\cpu.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>device.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\device.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>idle.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\idle.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ipc.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\ipc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>irq.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\irq.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>kservice.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\kservice.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>mem.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\mem.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>mempool.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\mempool.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>object.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\object.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>scheduler.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\scheduler.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>signal.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\signal.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>thread.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\src\thread.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>timer.c</FileName>
               <FileType>1</FileType>
@@ -492,40 +467,55 @@
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>key.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\key.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>led.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\led.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>at_device_a9g.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\at_device_a9g.c</FilePath>
+            </File>
             <File>
               <FileName>at_socket_a9g.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\at_socket_a9g.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>at_sample_a9g.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\at_sample_a9g.c</FilePath>
+            </File>
             <File>
               <FileName>minmea.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\minmea.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>client_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\client_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>rc522.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\rc522.c</FilePath>
+            </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\gps.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -537,50 +527,41 @@
               <FileType>1</FileType>
               <FilePath>board\board.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>board\CubeMX_Config\Src\stm32f4xx_hal_msp.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sdcard_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>board\ports\sdcard_port.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>startup_stm32f407xx.s</FileName>
               <FileType>2</FileType>
               <FilePath>libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\HAL_Drivers\drv_gpio.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>drv_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\HAL_Drivers\drv_usart.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>drv_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\HAL_Drivers\drv_spi.c</FilePath>
+            </File>
             <File>
               <FileName>drv_sdio.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\HAL_Drivers\drv_sdio.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>drv_common.c</FileName>
               <FileType>1</FileType>
@@ -590,284 +571,285 @@
         </Group>
         <Group>
           <GroupName>ali-iotkit</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>1</IncludeInBuild>
+              <AlwaysBuild>0</AlwaysBuild>
+              <GenerateAssemblyFile>0</GenerateAssemblyFile>
+              <AssembleAssemblyFile>0</AssembleAssemblyFile>
+              <PublicsOnly>0</PublicsOnly>
+              <StopOnExitCode>3</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define> </Define>
+                  <Undefine> </Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
-              <FileName>infra_defs.c</FileName>
+              <FileName>mqtt-example.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_defs.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\samples\mqtt\mqtt-example.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_cjson.c</FileName>
+              <FileName>iotx_ca_cert.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_cjson.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\coap\iotx_ca_cert.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_compat.c</FileName>
+              <FileName>iotx_coap_api.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_compat.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\coap\iotx_coap_api.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_log.c</FileName>
+              <FileName>CoAPDeserialize.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_log.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPDeserialize.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_net.c</FileName>
+              <FileName>CoAPExport.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_net.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPExport.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_prt_nwk_payload.c</FileName>
+              <FileName>CoAPMessage.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_prt_nwk_payload.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPMessage.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_report.c</FileName>
+              <FileName>CoAPNetwork.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_report.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPNetwork.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_sha256.c</FileName>
+              <FileName>CoAPSerialize.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_sha256.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\iot-coap-c\CoAPSerialize.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_string.c</FileName>
+              <FileName>lite-log.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_string.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\log\LITE-log\lite-log.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>infra_timer.c</FileName>
+              <FileName>mqtt_client.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\infra\infra_timer.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\mqtt_client.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>mqtt_api.c</FileName>
+              <FileName>mqtt_instance.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\mqtt_api.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\mqtt_instance.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>MQTTConnectClient.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\MQTTConnectClient.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTConnectClient.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>MQTTDeserializePublish.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\MQTTDeserializePublish.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTDeserializePublish.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>MQTTPacket.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\MQTTPacket.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTPacket.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>MQTTSerializePublish.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\MQTTSerializePublish.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTSerializePublish.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>MQTTSubscribeClient.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\MQTTSubscribeClient.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTSubscribeClient.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>MQTTUnsubscribeClient.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\MQTTUnsubscribeClient.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\mqtt\Link-MQTT\MQTTPacket\MQTTUnsubscribeClient.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>iotx_mqtt_client.c</FileName>
+              <FileName>json_parser.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\mqtt\impl\iotx_mqtt_client.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\json_parser.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_client.c</FileName>
+              <FileName>json_token.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\client\dm_client.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\json_token.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_client_adapter.c</FileName>
+              <FileName>lite-utils_testsuites.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\client\dm_client_adapter.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\lite-utils_testsuites.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_api.c</FileName>
+              <FileName>mem_stats.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_api.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\mem_stats.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_cota.c</FileName>
+              <FileName>string_utils.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_cota.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\packages\LITE-utils\string_utils.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_fota.c</FileName>
+              <FileName>ca.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_fota.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\ca.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_ipc.c</FileName>
+              <FileName>class_interface.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_ipc.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\class_interface.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_manager.c</FileName>
+              <FileName>guider.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_manager.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\guider.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_message_cache.c</FileName>
+              <FileName>id2_guider.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_message_cache.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\id2_guider.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_message.c</FileName>
+              <FileName>iotx_device.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_message.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\iotx_device.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_opt.c</FileName>
+              <FileName>report.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_opt.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\report.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_ota.c</FileName>
+              <FileName>sdk-impl.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_ota.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\system\iotkit-system\src\sdk-impl.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_msg_process.c</FileName>
+              <FileName>utils_epoch_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_msg_process.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_epoch_time.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_utils.c</FileName>
+              <FileName>utils_httpc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_utils.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_httpc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>iotx_cm_mqtt.c</FileName>
+              <FileName>utils_list.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\iotx_cm_mqtt.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_list.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>impl_linkkit.c</FileName>
+              <FileName>utils_net.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\impl_linkkit.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_net.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>iotx_cm.c</FileName>
+              <FileName>utils_timer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\iotx_cm.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\misc\utils_timer.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dm_log_report.c</FileName>
+              <FileName>utils_base64.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_model\dm_log_report.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_base64.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
-              <FileName>dev_sign_mqtt.c</FileName>
+              <FileName>utils_hmac.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\iotkit-embedded\src\dev_sign\dev_sign_mqtt.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_hmac.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>utils_md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_md5.c</FilePath>
+            </File>
+            <File>
+              <FileName>utils_sha1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_sha1.c</FilePath>
+            </File>
+            <File>
+              <FileName>utils_sha256.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\ali-iotkit-v2.0.3\iotkit-embedded\src\utils\digest\utils_sha256.c</FilePath>
+            </File>
             <File>
               <FileName>HAL_OS_rtthread.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\ports\rtthread\HAL_OS_rtthread.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\ports\rtthread\HAL_OS_rtthread.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>HAL_TCP_rtthread.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\ports\rtthread\HAL_TCP_rtthread.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\ports\rtthread\HAL_TCP_rtthread.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>HAL_UDP_rtthread.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\ports\rtthread\HAL_UDP_rtthread.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>wrapper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\ali-iotkit-latest\ports\wrapper.c</FilePath>
+              <FilePath>packages\ali-iotkit-v2.0.3\ports\rtthread\HAL_UDP_rtthread.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -875,82 +857,95 @@
           <GroupName>at_device</GroupName>
           <Files>
             <File>
-              <FileName>at_client_sample.c</FileName>
+              <FileName>at_device.c</FileName>
               <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_client_sample.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>at_socket_ec20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_ec20.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>at_socket_esp8266.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_esp8266.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>at_socket_m26.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_m26.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>at_socket_rw007.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_rw007.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>at_socket_sim76xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_sim76xx.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>at_socket_sim800c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\at_device-v1.5.0\at_socket_sim800c.c</FilePath>
+              <FilePath>packages\at_device-latest\src\at_device.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>cm_backtrace</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>1</IncludeInBuild>
+              <AlwaysBuild>0</AlwaysBuild>
+              <GenerateAssemblyFile>0</GenerateAssemblyFile>
+              <AssembleAssemblyFile>0</AssembleAssemblyFile>
+              <PublicsOnly>0</PublicsOnly>
+              <StopOnExitCode>3</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls> --c99</MiscControls>
+                  <Define> </Define>
+                  <Undefine> </Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>cm_backtrace.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\CmBacktrace-v1.3.0\cm_backtrace.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cmb_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\CmBacktrace-v1.3.0\cmb_port.c</FilePath>
             </File>
           </Files>
-          <GroupOption>
-            <GroupArmAds>
-              <Cads>
-                <VariousControls>
-                  <MiscControls> --c99</MiscControls>
-                  <Define> </Define>
-                  <Undefine> </Undefine>
-                  <IncludePath> </IncludePath>
-                </VariousControls>
-              </Cads>
-            </GroupArmAds>
-          </GroupOption>
         </Group>
         <Group>
           <GroupName>mbedtls</GroupName>
@@ -960,582 +955,416 @@
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\aes.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>aesni.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\aesni.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>arc4.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\arc4.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>asn1parse.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\asn1parse.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>asn1write.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\asn1write.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>base64.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\base64.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>bignum.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\bignum.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>blowfish.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\blowfish.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>camellia.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\camellia.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ccm.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ccm.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>certs.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\certs.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cipher.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\cipher.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cipher_wrap.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\cipher_wrap.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cmac.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\cmac.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ctr_drbg.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ctr_drbg.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>debug.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\debug.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>des.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\des.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dhm.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\dhm.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ecdh.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ecdh.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ecdsa.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ecdsa.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ecjpake.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ecjpake.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ecp.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ecp.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ecp_curves.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ecp_curves.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>entropy.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\entropy.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>entropy_poll.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\entropy_poll.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>error.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\error.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>gcm.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\gcm.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>havege.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\havege.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>hmac_drbg.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\hmac_drbg.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>md.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\md.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>md2.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\md2.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>md4.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\md4.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>md5.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\md5.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>md_wrap.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\md_wrap.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>memory_buffer_alloc.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\memory_buffer_alloc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>oid.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\oid.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>padlock.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\padlock.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pem.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pem.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pk.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pk.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pk_wrap.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pk_wrap.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pkcs11.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pkcs11.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pkcs12.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pkcs12.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pkcs5.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pkcs5.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pkparse.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pkparse.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pkwrite.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\pkwrite.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>platform.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\platform.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ripemd160.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ripemd160.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>rsa.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\rsa.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>rsa_internal.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\rsa_internal.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sha1.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\sha1.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sha256.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\sha256.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sha512.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\sha512.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_cache.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_cache.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_ciphersuites.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_ciphersuites.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_cli.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_cli.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_cookie.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_cookie.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_srv.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_srv.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_ticket.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_ticket.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ssl_tls.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\ssl_tls.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>threading.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\threading.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>timing.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\timing.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>version.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\version.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>version_features.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\version_features.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509_create.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509_create.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509_crl.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509_crl.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509_crt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509_crt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509_csr.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509_csr.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509write_crt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509write_crt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>x509write_csr.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\x509write_csr.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>xtea.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\mbedtls\library\xtea.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>aes_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\aes_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>arc4_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\arc4_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>des_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\des_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>md5_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\md5_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>rsa_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\rsa_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sha1_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\sha1_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sha256_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\sha256_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sha512_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\sha512_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>timing_alt.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\timing_alt.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>tls_certificate.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\tls_certificate.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>tls_client.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\tls_client.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>tls_hardware.c</FileName>
               <FileType>1</FileType>
               <FilePath>packages\mbedtls-v2.7.10\ports\src\tls_hardware.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>tls_net.c</FileName>
               <FileType>1</FileType>
@@ -1551,29 +1380,21 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\libcpu\arm\common\backtrace.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>div0.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\libcpu\arm\common\div0.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>showmem.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\libcpu\arm\common\showmem.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cpuport.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\libcpu\arm\cortex-m4\cpuport.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>context_rvds.S</FileName>
               <FileType>2</FileType>
@@ -1589,64 +1410,46 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\src\dfs.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dfs_file.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\src\dfs_file.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dfs_fs.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\src\dfs_fs.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dfs_posix.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\src\dfs_posix.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>poll.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\src\poll.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>select.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\src\select.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>devfs.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\filesystems\devfs\devfs.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dfs_elm.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\filesystems\elmfat\dfs_elm.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ff.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\dfs\filesystems\elmfat\ff.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ccsbcs.c</FileName>
               <FileType>1</FileType>
@@ -1656,105 +1459,166 @@
         </Group>
         <Group>
           <GroupName>DeviceDrivers</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>1</IncludeInBuild>
+              <AlwaysBuild>0</AlwaysBuild>
+              <GenerateAssemblyFile>0</GenerateAssemblyFile>
+              <AssembleAssemblyFile>0</AssembleAssemblyFile>
+              <PublicsOnly>0</PublicsOnly>
+              <StopOnExitCode>3</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define> </Define>
+                  <Undefine> </Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>pin.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\misc\pin.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>mtd_nor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\mtd\mtd_nor.c</FilePath>
+            </File>
+            <File>
+              <FileName>mtd_nand.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\mtd\mtd_nand.c</FilePath>
+            </File>
             <File>
               <FileName>rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\rtc\rtc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>block_dev.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\sdio\block_dev.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>mmcsd_core.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\sdio\mmcsd_core.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sd.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\sdio\sd.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sdio.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\sdio\sdio.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>mmc.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\sdio\mmc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>serial.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\serial\serial.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>spi_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\spi\spi_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_dev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\spi\spi_dev.c</FilePath>
+            </File>
             <File>
               <FileName>completion.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\src\completion.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dataqueue.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\src\dataqueue.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>pipe.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\src\pipe.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ringblk_buf.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\src\ringblk_buf.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>ringbuffer.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\src\ringbuffer.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>waitqueue.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\src\waitqueue.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>workqueue.c</FileName>
               <FileType>1</FileType>
@@ -1770,36 +1634,26 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\finsh\shell.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>symbol.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\finsh\symbol.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>cmd.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\finsh\cmd.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>msh.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\finsh\msh.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>msh_cmd.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\finsh\msh_cmd.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>msh_file.c</FileName>
               <FileType>1</FileType>
@@ -1815,40 +1669,25 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\libc\compilers\armlibc\libc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>mem_std.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\libc\compilers\armlibc\mem_std.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stdio.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\libc\compilers\armlibc\stdio.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stubs.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\libc\compilers\armlibc\stubs.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>time.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\libc\compilers\armlibc\time.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>gmtime_r.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>rt-thread\components\libc\compilers\common\gmtime_r.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1860,22 +1699,16 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\at\src\at_utils.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>at_cli.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\at\src\at_cli.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>at_client.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\at\src\at_client.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>at_socket.c</FileName>
               <FileType>1</FileType>
@@ -1891,8 +1724,6 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\netdev\src\netdev.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>netdev_ipaddr.c</FileName>
               <FileType>1</FileType>
@@ -1908,36 +1739,26 @@
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\sal_socket\src\sal_ipaddr.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>sal_socket.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\sal_socket\src\sal_socket.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>net_netdb.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\sal_socket\socket\net_netdb.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>af_inet_at.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\sal_socket\impl\af_inet_at.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>net_sockets.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\net\sal_socket\socket\net_sockets.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>dfs_net.c</FileName>
               <FileType>1</FileType>
@@ -1953,154 +1774,151 @@
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_cec.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cec.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_cortex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cortex.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_crc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_cryp.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cryp.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_cryp_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cryp_ex.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_dma.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_dma_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma_ex.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_pwr.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pwr.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_pwr_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pwr_ex.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_rcc.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_rcc_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_rng.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rng.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_usart.c</FilePath>
             </File>
-          </Files>
-          <Files>
+            <File>
+              <FileName>stm32f4xx_hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_qspi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_qspi.c</FilePath>
+            </File>
             <File>
               <FileName>stm32f4xx_hal_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_rtc_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_ll_sdmmc.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_sdmmc.c</FilePath>
             </File>
-          </Files>
-          <Files>
             <File>
               <FileName>stm32f4xx_hal_sd.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sd.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_nor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_nor.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_nand.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_nand.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_fmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_fsmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fsmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_sram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\libraries\STM32F4xx_HAL\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</FilePath>
             </File>
           </Files>
         </Group>
       </Groups>
     </Target>
   </Targets>
+
   <RTE>
-    <apis />
-    <components />
-    <files />
+    <apis/>
+    <components/>
+    <files/>
   </RTE>
+
 </Project>

@@ -1,0 +1,22 @@
+<!--pages/write_order/write_order.wxml-->
+<text>填写订单</text>
+<view class='write_container'>
+  <form bindsubmit='formSubmit'>
+    <view class='x stype'>
+      <view>服务类型:</view>
+      <input name="stype" placeholder="服务类型" />
+    </view>
+    <view class='x take_addr'>
+      <view>取货地址:</view>
+      <input name="taddr" placeholder="取货地址" />
+    </view>
+    <view class='x send_addr'>
+      <view>配送地址:</view>
+      <input name="saddr" placeholder="配送地址" />
+    </view>
+    <view class="btn-area">
+      <button formType="submit">提交</button>
+    </view>
+  </form>
+</view>
+

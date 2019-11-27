@@ -1,0 +1,51 @@
+<!--pages/check_order/check_order.wxml-->
+<view class='check_container'>
+  <block wx:for="{{order}}" wx:for-index="idx">
+    <view class='order_d' ontap="LIOrderDetail" data-id="{{item.order_id}}">
+
+      <view class="order-id">
+        <text>订单号:{{item.order_id}}</text>
+        <text>创建时间:{{item.create_time}}</text>
+      </view>
+
+      <view class="order_detail">
+        <view class="panel-between">
+        <text>配送车辆编号:</text>
+        <text>{{item.car_id}}号车</text>
+        </view>
+
+        <view class="divLine"></view>
+        
+        <view class="panel-between">
+        <text>服务类型:</text>
+        <text>{{item.service_type}}</text>
+        </view>
+        
+        <view class="divLine"></view>
+        
+        <view class="panel-between item-right">
+          <text>订单状态:</text>
+          <text class="order-status-txt unpay" wx:if="{{item.status==0}}">待付款</text>
+          <text class="order-status-txt payed" wx:if="{{item.status==1}}">运输途中</text>
+          <text class="order-status-txt done" wx:if="{{item.status==2}}">已发货</text>
+        </view>
+        
+        <view class="divLine"></view>
+        
+        <view class="panel-between">
+        <text>取货地址:</text>
+        <text>{{item.start_place}}</text>
+        </view>
+        
+        <view class="divLine"></view>
+        
+        <view class="panel-between">
+        <text>配送地址:</text>
+        <text>{{item.end_place}}</text>
+        </view>
+        
+      </view>
+    </view>
+    <view class="divLine"></view>
+  </block>
+</view>
